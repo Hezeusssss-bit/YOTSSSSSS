@@ -16,14 +16,20 @@ use App\Http\Controllers\AuthController;
 */
 
 Route::middleware('authCheck')->group(function () {
-    Route::resource('products', App\Http\Controllers\ProductController::class);
+    // Resource routes for products with product.* names (for compatibility)
+    Route::resource('products', App\Http\Controllers\ProductController::class)->names([
+        'index' => 'product.index',
+        'create' => 'product.create',
+        'store' => 'product.store',
+        'show' => 'product.show',
+        'edit' => 'product.edit',
+        'update' => 'product.update',
+        'destroy' => 'product.destroy',
+    ]);
+    
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-});
-
-Route::get('/', function () {
-    return redirect()->route('login');
 });
 
 Route::get('/', function () {
@@ -36,12 +42,4 @@ Route::get('/login', [ProductController::class, 'login'])->name('login');
 Route::post('/login', [ProductController::class, 'loginPost'])->name('login.post');
 Route::post('/logout', [ProductController::class, 'logout'])->name('logout');
 
-
-Route::get('/product', [ProductController::class, 'index'])->name('product.index');
-Route::get('/create', [ProductController::class, 'create'])->name('product.create');
-Route::post('/product', [ProductController::class, 'store'])->name('product.store');
-Route::get('/product/{product}/edit', [ProductController::class, 'edit'])->name('product.edit');
-Route::put('/product/{product}/update', [ProductController::class, 'update'])->name('product.update');
-Route::delete('/product/{product}/destroy', [ProductController::class, 'destroy'])->name('product.destroy');
-Route::resource('products', App\Http\Controllers\ProductController::class);
 
