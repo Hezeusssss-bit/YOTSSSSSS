@@ -3,57 +3,72 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\products;
-
+use App\Models\Products;
 
 class ProductController extends Controller
 {
-
+    // 🔑 Login POST
     public function loginPost(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-    // 🔑 Dummy account
-    $dummyEmail = 'kyle@kyle';
-    $dummyPassword = 'kyle';
+        // Dummy account
+        $dummyEmail = 'kyle@kyle';
+        $dummyPassword = 'kyle';
 
-    if ($credentials['email'] === $dummyEmail && $credentials['password'] === $dummyPassword) {
-        // Store session to keep user logged in
-        session(['loggedIn' => true]);
-        return redirect()->route('product.index')->with('Success', 'Welcome Admin!');
+        if ($credentials['email'] === $dummyEmail && $credentials['password'] === $dummyPassword) {
+            session(['loggedIn' => true]);
+            return redirect()->route('product.index')->with('Success', 'Welcome Admin!');
+        }
+
+        return back()->withErrors([
+            'email' => 'Invalid login credentials.',
+        ]);
     }
 
-    return back()->withErrors([
-        'email' => 'Invalid login credentials.',
-    ]);
-}
-
-
-public function logout()
-{
-    session()->forget('loggedIn');
-    return redirect()->route('login')->with('Success', 'Logged out successfully.');
-}
-
-
-public function login()
-{
-    return view('products.login');
-}
-
-    public function index(){
-         $products = Products::all();
-         return view('products.index', ['products' => $products]);
+    // 🔑 Logout
+    public function logout()
+    {
+        session()->forget('loggedIn');
+        return redirect()->route('login')->with('Success', 'Logged out successfully.');
     }
 
-    public function create(){
-         return view('products.create');
+    // 🔑 Login page
+    public function login()
+    {
+        return view('products.login');
     }
 
-    public function store(Request $request){
+    // 📌 INDEX with Search + Pagination
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = Products::query();
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        // Use paginate instead of all()
+        $products = $query->paginate(5)->appends(['search' => $search]);
+
+        return view('products.index', ['products' => $products]);
+    }
+
+    // 📌 CREATE page
+    public function create()
+    {
+        return view('products.create');
+    }
+
+    // 📌 STORE new product
+    public function store(Request $request)
+    {
         $data = $request->validate([
             'name' => 'required',
             'qty' => 'required|numeric',
@@ -61,17 +76,21 @@ public function login()
             'description' => "nullable"
         ]);
 
-        $newProduct = products::create($data);
+        Products::create($data);
 
-        return redirect(route('product.index'));
+        return redirect(route('product.index'))->with('Success', 'Product Created');
     }
 
-    public function edit(Products $product){
+    // 📌 EDIT page
+    public function edit(Products $product)
+    {
         return view('products.edit', ['product' => $product]);
     }
 
-    public function update(Products $product, Request $request){
-            $data = $request->validate([
+    // 📌 UPDATE product
+    public function update(Products $product, Request $request)
+    {
+        $data = $request->validate([
             'name' => 'required',
             'qty' => 'required|numeric',
             'price' => 'required|numeric',
@@ -82,10 +101,12 @@ public function login()
         return redirect(route('product.index'))->with('Success', 'Product Updated');
     }
 
+    // 📌 DESTROY product
+
     public function destroy(Products $product){
         $product->delete();
          return redirect(route('product.index'))->with('Success', 'Product Deleted');
     }
-    
+
+
 }
-    

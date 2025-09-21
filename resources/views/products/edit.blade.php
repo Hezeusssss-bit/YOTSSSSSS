@@ -100,7 +100,14 @@
         transition: all 0.3s ease;
     }
 
-    input[type="submit"]:hover {
+    input[type="submit"]:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    input[type="submit"]:hover:enabled {
         transform: scale(1.05);
         box-shadow: 0 6px 15px rgba(0,0,0,0.2);
     }
@@ -112,7 +119,7 @@
 
     .return-btn a {
         display: inline-block;
-        background: #ff9800; /* complementary accent for blue */
+        background: #ff9800;
         color: #fff;
         padding: 10px 16px;
         border-radius: 12px;
@@ -142,7 +149,7 @@
         </div>
     @endif
 
-    <form method="post" action="{{ route('product.update', ['product' => $product]) }}">
+    <form method="post" action="{{ route('product.update', ['product' => $product]) }}" id="editForm">
         @csrf
         @method('put')
 
@@ -163,7 +170,7 @@
             <input type="text" name="description" value="{{ $product->description }}" />
         </div>
         <div>
-            <input type="submit" value="Update Product" />
+            <input type="submit" value="Update Product" id="updateBtn" disabled />
         </div>
     </form>
 
@@ -171,5 +178,31 @@
         <a href="{{ route('product.index') }}">← Return to Product List</a>
     </div>
 </div>
+
+<script>
+    const form = document.getElementById('editForm');
+    const inputs = form.querySelectorAll('input[type="text"]');
+    const submitBtn = document.getElementById('updateBtn');
+
+    // Store initial values
+    const originalValues = {};
+    inputs.forEach(input => {
+        originalValues[input.name] = input.value;
+    });
+
+    function checkForChanges() {
+        let changed = false;
+        inputs.forEach(input => {
+            if (input.value.trim() !== originalValues[input.name].trim()) {
+                changed = true;
+            }
+        });
+        submitBtn.disabled = !changed;
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('input', checkForChanges);
+    });
+</script>
 </body>
 </html>

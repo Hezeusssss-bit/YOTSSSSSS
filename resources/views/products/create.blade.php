@@ -52,19 +52,6 @@
         color: #333;
     }
 
-    .error-list {
-        padding: 10px 15px;
-        background: #f8d7da;
-        color: #842029;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .error-list ul {
-        padding-left: 20px;
-        margin: 0;
-    }
-
     label {
         display: block;
         margin-bottom: 6px;
@@ -77,7 +64,7 @@
         padding: 12px;
         border: 1px solid #ccc;
         border-radius: 10px;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         font-size: 14px;
         transition: all 0.3s ease;
     }
@@ -86,6 +73,13 @@
         border-color: #1976d2;
         box-shadow: 0 0 10px rgba(25, 118, 210, 0.3);
         outline: none;
+    }
+
+    /* Inline error inside input field */
+    .error-message {
+        color: #842029;
+        font-size: 12px;
+        margin-bottom: 10px;
     }
 
     input[type="submit"] {
@@ -98,6 +92,7 @@
         cursor: pointer;
         font-weight: bold;
         transition: all 0.3s ease;
+        margin-top: 10px;
     }
 
     input[type="submit"]:hover {
@@ -131,37 +126,39 @@
 <div class="container">
     <h1>Create a New Product</h1>
 
-    @if($errors->any())
-        <div class="error-list">
-            <strong>Whoops! Something went wrong:</strong>
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <form method="post" action="{{ route('product.store') }}">
         @csrf
+
         <div>
             <label>Name</label>
-            <input type="text" name="name" placeholder="Product name" />
+            <input type="text" name="name" placeholder="Product name" value="{{ old('name') }}" />
+            @error('name')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
         </div>
 
         <div>
             <label>Quantity</label>
-            <input type="text" name="qty" placeholder="Quantity" />
+            <input type="text" name="qty" placeholder="Quantity" value="{{ old('qty') }}" />
+            @error('qty')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
         </div>
 
         <div>
             <label>Price</label>
-            <input type="text" name="price" placeholder="Price" />
+            <input type="text" name="price" placeholder="Price" value="{{ old('price') }}" />
+            @error('price')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
         </div>
 
         <div>
             <label>Description</label>
-            <input type="text" name="description" placeholder="Description" />
+            <input type="text" name="description" placeholder="Description" value="{{ old('description') }}" />
+            @error('description')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
         </div>
 
         <div>
