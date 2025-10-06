@@ -43,22 +43,23 @@ class ProductController extends Controller
     }
 
     // 📌 INDEX with Search + Pagination
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
+public function index(Request $request)
+{
+    $search = $request->input('search');
 
-        $query = Products::query();
+    $query = Products::query();
 
-        if ($search) {
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-        }
-
-        // Use paginate instead of all()
-        $products = $query->paginate(5)->appends(['search' => $search]);
-
-        return view('products.index', ['products' => $products]);
+    if ($search) {
+        $query->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%");
     }
+
+    // Paginate with 5 items per page and keep search query across pages
+    $products = $query->orderBy('created_at', 'desc')->paginate(5)->appends($request->all());
+
+    return view('products.index', ['products' => $products]);
+}
+
 
     // 📌 CREATE page
     public function create()
