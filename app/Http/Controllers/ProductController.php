@@ -21,7 +21,7 @@ class ProductController extends Controller
 
         if ($credentials['email'] === $dummyEmail && $credentials['password'] === $dummyPassword) {
             session(['loggedIn' => true]);
-            return redirect()->route('product.index')->with('Success', 'Welcome Admin!');
+            return redirect()->route('home')->with('Success', 'Welcome Admin!');
         }
 
         return back()->withErrors([
@@ -72,14 +72,17 @@ public function index(Request $request)
     {
         $data = $request->validate([
             'name' => 'required',
-            'qty' => 'required|numeric',
-            'price' => 'required|numeric',
-            'description' => "nullable"
+            // qty now represents Lastname
+            'qty' => 'required|string',
+            // price now represents Age
+            'price' => 'required|integer',
+            // description now represents Address
+            'description' => 'nullable|string'
         ]);
 
         Products::create($data);
 
-        return redirect(route('product.index'))->with('Success', 'Product Created');
+        return redirect(route('home'))->with('Success', 'Product Created');
     }
 
     // 📌 EDIT page
@@ -99,14 +102,26 @@ public function index(Request $request)
         ]);
 
         $product->update($data);
-        return redirect(route('product.index'))->with('Success', 'Product Updated');
+        return redirect(route('home'))->with('Success', 'Product Updated');
     }
 
     // 📌 DESTROY product
 
     public function destroy(Products $product){
         $product->delete();
-         return redirect(route('product.index'))->with('Success', 'Product Deleted');
+         return redirect(route('home'))->with('Success', 'Product Deleted');
+    }
+
+    public function home(Request $request)
+    {
+        $perPage = (int) $request->input('per_page', 10);
+        if ($perPage <= 0) { $perPage = 10; }
+        if ($perPage > 100) { $perPage = 100; }
+        $products = \App\Models\Products::orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->appends($request->all());
+        $totalResidents = Products::count();
+        return view('products.home', compact('products', 'totalResidents'));
     }
 
 

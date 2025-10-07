@@ -47,3 +47,5 @@ Route::post('/products', [ProductController::class, 'store'])->name('product.sto
 Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('product.edit');
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('product.update');
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
+
+Route::get('/home', [ProductController::class, 'home'])->name('home');

@@ -1,174 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Create Product</title>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #6a11cb, #2575fc);
-        min-height: 100vh;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-    }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    .container {
-        background: #fff;
-        border-radius: 20px;
-        padding: 30px;
-        width: 400px;
-        max-width: 100%;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        position: relative;
-        overflow: hidden;
-    }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; min-height: 100vh; display: flex; }
 
-    .container::before {
-        content: "";
-        position: absolute;
-        top: -40%;
-        left: -40%;
-        width: 180%;
-        height: 180%;
-        background: radial-gradient(circle at 30% 30%, #42a5f5, transparent 40%);
-        opacity: 0.15;
-        animation: rotateGrad 8s linear infinite;
-        border-radius: 50%;
-        pointer-events: none;
-    }
+.sidebar { width: 250px; background: #1a1a2e; min-height: 100vh; padding: 30px 0; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; }
+.logo { color: #fff; font-size: 24px; font-weight: 700; padding: 0 30px; margin-bottom: 50px; display: flex; align-items: center; gap: 10px; }
+.nav-menu { flex: 1; }
+.nav-item { color: #999; padding: 15px 30px; text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 15px; transition: all 0.3s ease; }
+.nav-item i { width: 20px; text-align: center; }
+.nav-item.active { color: #fff; background: rgba(255,255,255,0.1); border-left: 3px solid #fff; }
 
-    @keyframes rotateGrad {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
+.main-content { margin-left: 250px; flex: 1; padding: 30px 40px; }
 
-    h1 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #333;
-    }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.header h1 { color: #1a1a2e; font-size: 28px; font-weight: 700; }
+.header-icons { display: flex; gap: 15px; align-items: center; }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; background: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.icon-btn i { color: #333; font-size: 16px; }
 
-    label {
-        display: block;
-        margin-bottom: 6px;
-        color: #555;
-        font-weight: bold;
-    }
+.container { background: #fff; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: relative; overflow: hidden; max-width: 600px; margin: auto; }
 
-    input[type="text"] {
-        width: 93%;
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        margin-bottom: 5px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
+.container::before { content: ""; position: absolute; top: -40%; left: -40%; width: 180%; height: 180%; background: radial-gradient(circle at 30% 30%, #42a5f5, transparent 40%); opacity: 0.15; animation: rotateGrad 8s linear infinite; border-radius: 50%; pointer-events: none; }
 
-    input[type="text"]:focus {
-        border-color: #1976d2;
-        box-shadow: 0 0 10px rgba(25, 118, 210, 0.3);
-        outline: none;
-    }
+@keyframes rotateGrad { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* Inline error inside input field */
-    .error-message {
-        color: #842029;
-        font-size: 12px;
-        margin-bottom: 10px;
-    }
+label { display: block; margin-bottom: 6px; color: #555; font-weight: bold; }
+input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 5px; font-size: 14px; transition: all 0.3s ease; }
+input[type="text"]:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,118,210,0.3); outline: none; }
+.error-message { color: #842029; font-size: 12px; margin-bottom: 10px; }
 
-    input[type="submit"] {
-        width: 100%;
-        background: linear-gradient(135deg, #1976d2, #42a5f5);
-        border: none;
-        color: white;
-        padding: 12px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-    }
+.btn-add { padding: 10px 20px; border-radius: 8px; background: #fff; border: 1px solid #ddd; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; color: #333; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
+.btn-add:hover { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
 
-    input[type="submit"]:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    }
+.btn-export { padding: 10px 20px; border-radius: 8px; background: #1a1a2e; border: none; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
+.btn-export:hover { background: #0f0f1e; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,26,46,0.3); }
 
-    .return-btn {
-        text-align: center;
-        margin-top: 20px;
-    }
+.filter-section { display: flex; flex-direction: column; gap: 15px; }
 
-    .return-btn a {
-        display: inline-block;
-        background: #ff9800;
-        color: #fff;
-        padding: 10px 16px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
+.return-btn { margin-top: 20px; }
+.return-btn a { text-decoration: none; color: #1a1a2e; font-weight: 600; }
+.return-btn a:hover { text-decoration: underline; }
 
-    .return-btn a:hover {
-        background: #fb8c00;
-        transform: scale(1.05);
-    }
+.alert { position: fixed; top: 20px; right: 20px; background-color: #17002B; color: #ffffff; padding: 15px 25px; border-radius: 10px; font-weight: 600; box-shadow: 0 4px 15px #17002B; z-index: 9999; opacity: 0; animation: slideIn 0.5s forwards; }
+.alert.success { background-color: #17002B; color: #fff; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100px); } }
+.alert.hide { animation: slideOut 0.5s forwards; }
+
 </style>
 </head>
 <body>
-<div class="container">
-    <h1>Create a New Product</h1>
 
-    <form method="post" action="{{ route('product.store') }}">
-        @csrf
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="logo">
+    <i class="fas fa-store"></i>
+    <span>Logo</span>
+  </div>
+  <nav class="nav-menu">
+    <a href="{{ url('/home') }}" class="nav-item"><i class="fas fa-home"></i> <span>Home</span></a>
+    <a href="{{ route('product.index') }}" class="nav-item active"><i class="fas fa-boxes"></i> <span>Products</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+  </nav>
+</div>
 
-        <div>
-            <label>Name</label>
-            <input type="text" name="name" placeholder="Product name" value="{{ old('name') }}" />
-            @error('name')
-                <div class="error-message">{{ $message }}</div>
-            @enderror
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Header -->
+    <div class="header">
+        <h1>Create Product</h1>
+        <div class="header-icons">
+            <button class="icon-btn"><i class="fas fa-bell"></i></button>
+            <button class="icon-btn"><i class="fas fa-user"></i></button>
         </div>
+    </div>
 
-        <div>
-            <label>Quantity</label>
-            <input type="text" name="qty" placeholder="Quantity" value="{{ old('qty') }}" />
-            @error('qty')
-                <div class="error-message">{{ $message }}</div>
-            @enderror
+    <!-- Alerts -->
+    @if(session('Success'))
+        <div class="alert success" id="successAlert">{{ session('Success') }}</div>
+    @endif
+
+    <!-- Form Container -->
+    <div class="container">
+        <form method="POST" action="{{ route('product.store') }}">
+            @csrf
+            <div class="filter-section">
+                <div>
+                    <label>Name</label>
+                    <input type="text" name="name" placeholder="Product name" value="{{ old('name') }}" />
+                    @error('name')<div class="error-message">{{ $message }}</div>@enderror
+                </div>
+
+                <div>
+                    <label>Lastname</label>
+                    <input type="text" name="qty" placeholder="Lastname" value="{{ old('qty') }}" />
+                    @error('qty')<div class="error-message">{{ $message }}</div>@enderror
+                </div>
+
+                <div>
+                    <label>Age</label>
+                    <input type="text" name="price" placeholder="Age" value="{{ old('price') }}" />
+                    @error('price')<div class="error-message">{{ $message }}</div>@enderror
+                </div>
+
+                <div>
+                    <label>Address</label>
+                    <input type="text" name="description" placeholder="Address" value="{{ old('description')
+                    }}" />
+                    @error('description')
+                        <div class="error-message">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div>
+                    <input type="submit" value="Save New Product" class="btn-add"/>
+                </div>
+            </div>
+        </form>
+
+        <div class="return-btn">
+            <a href="{{ route('product.index') }}">← Return to Product List</a>
         </div>
-
-        <div>
-            <label>Price</label>
-            <input type="text" name="price" placeholder="Price" value="{{ old('price') }}" />
-            @error('price')
-                <div class="error-message">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div>
-            <label>Description</label>
-            <input type="text" name="description" placeholder="Description" value="{{ old('description') }}" />
-            @error('description')
-                <div class="error-message">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div>
-            <input type="submit" value="Save New Product" />
-        </div>
-    </form>
-
-    <div class="return-btn">
-        <a href="{{ route('product.index') }}">← Return to Product List</a>
     </div>
 </div>
+
+<!-- Floating Alerts Script -->
+<script>
+setTimeout(() => {
+    const alert = document.getElementById('successAlert');
+    if (alert) {
+        alert.classList.add('hide');
+        setTimeout(() => alert.remove(), 500);
+    }
+}, 3000);
+</script>
+
 </body>
 </html>

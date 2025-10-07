@@ -136,7 +136,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Edit a Product</h1>
+    <h1>Edit Record</h1>
 
     @if($errors->any())
         <div class="error-list">
@@ -158,19 +158,19 @@
             <input type="text" name="name" value="{{ $product->name }}" />
         </div>
         <div>
-            <label>Quantity</label>
+            <label>Lastname</label>
             <input type="text" name="qty" value="{{ $product->qty }}" />
         </div>
         <div>
-            <label>Price</label>
+            <label>Age</label>
             <input type="text" name="price" value="{{ $product->price }}" />
         </div>
         <div>
-            <label>Description</label>
+            <label>Address</label>
             <input type="text" name="description" value="{{ $product->description }}" />
         </div>
         <div>
-            <input type="submit" value="Update Product" id="updateBtn" disabled />
+            <input type="submit" value="Update Record" id="updateBtn" disabled />
         </div>
     </form>
 
@@ -206,3 +206,5 @@
 </script>
 </body>
 </html>
+
+
