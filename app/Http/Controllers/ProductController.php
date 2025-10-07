@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Products;
+use App\Models\Resident;
 
 class ProductController extends Controller
 {
@@ -21,7 +21,11 @@ class ProductController extends Controller
 
         if ($credentials['email'] === $dummyEmail && $credentials['password'] === $dummyPassword) {
             session(['loggedIn' => true]);
-            return redirect()->route('home')->with('Success', 'Welcome Admin!');
+            
+            // Log login activity
+            $this->logActivity('login', 'Admin logged into the system');
+            
+            return redirect()->route('resident.index')->with('Success', 'Welcome Admin!');
         }
 
         return back()->withErrors([
@@ -47,7 +51,7 @@ public function index(Request $request)
 {
     $search = $request->input('search');
 
-    $query = Products::query();
+    $query = Resident::query();
 
     if ($search) {
         $query->where('name', 'like', "%{$search}%")
@@ -55,9 +59,23 @@ public function index(Request $request)
     }
 
     // Paginate with 5 items per page and keep search query across pages
-    $products = $query->orderBy('created_at', 'desc')->paginate(5)->appends($request->all());
+    $residents = $query->orderBy('created_at', 'desc')->paginate(5)->appends($request->all());
 
-    return view('products.index', ['products' => $products]);
+    // Analytics data
+    $totalResidents = Resident::count();
+    $newThisMonth = Resident::whereMonth('created_at', now()->month)
+                           ->whereYear('created_at', now()->year)
+                           ->count();
+
+    // Recent Activities - Get real activities from database
+    $recentActivities = $this->getRecentActivities();
+
+    return view('products.index', [
+        'residents' => $residents,
+        'totalResidents' => $totalResidents,
+        'newThisMonth' => $newThisMonth,
+        'recentActivities' => $recentActivities
+    ]);
 }
 
 
@@ -80,36 +98,61 @@ public function index(Request $request)
             'description' => 'nullable|string'
         ]);
 
-        Products::create($data);
+        $resident = Resident::create($data);
+        
+        // Log activity
+        $this->logActivity('resident_added', "New resident '{$resident->name}' added to the system");
 
-        return redirect(route('home'))->with('Success', 'Product Created');
+        return redirect(route('home'))->with('Success', 'Resident Created Successfully');
+    }
+
+    // 📌 SHOW single resident details (for view button)
+    public function show(Resident $resident)
+    {
+        return response()->json([
+            'id' => $resident->id,
+            'name' => $resident->name,
+            'qty' => $resident->qty,
+            'price' => $resident->price,
+            'description' => $resident->description,
+            'created_at' => $resident->created_at->format('M d, Y h:i A'),
+            'updated_at' => $resident->updated_at->format('M d, Y h:i A')
+        ]);
     }
 
     // 📌 EDIT page
-    public function edit(Products $product)
+    public function edit(Resident $resident)
     {
-        return view('products.edit', ['product' => $product]);
+        return view('products.edit', ['product' => $resident]);
     }
 
     // 📌 UPDATE product
-    public function update(Products $product, Request $request)
+    public function update(Resident $resident, Request $request)
     {
         $data = $request->validate([
             'name' => 'required',
-            'qty' => 'required|numeric',
-            'price' => 'required|numeric',
+            'qty' => 'required|string',
+            'price' => 'required|integer',
             'description' => "nullable"
         ]);
 
-        $product->update($data);
-        return redirect(route('home'))->with('Success', 'Product Updated');
+        $resident->update($data);
+        
+        // Log activity
+        $this->logActivity('resident_updated', "Resident '{$resident->name}' information updated");
+        
+        return redirect(route('home'))->with('Success', 'Resident Updated Successfully');
     }
 
     // 📌 DESTROY product
-
-    public function destroy(Products $product){
-        $product->delete();
-         return redirect(route('home'))->with('Success', 'Product Deleted');
+    public function destroy(Resident $resident){
+        $residentName = $resident->name; // Store name before deletion
+        $resident->delete();
+        
+        // Log activity
+        $this->logActivity('resident_deleted', "Resident '{$residentName}' deleted from the system");
+        
+        return redirect(route('home'))->with('Success', 'Resident Deleted Successfully');
     }
 
     public function home(Request $request)
@@ -117,12 +160,110 @@ public function index(Request $request)
         $perPage = (int) $request->input('per_page', 10);
         if ($perPage <= 0) { $perPage = 10; }
         if ($perPage > 100) { $perPage = 100; }
-        $products = \App\Models\Products::orderBy('created_at', 'desc')
+        $residents = \App\Models\Resident::orderBy('created_at', 'desc')
             ->paginate($perPage)
             ->appends($request->all());
-        $totalResidents = Products::count();
-        return view('products.home', compact('products', 'totalResidents'));
+        $totalResidents = Resident::count();
+        return view('products.home', compact('residents', 'totalResidents'));
     }
 
+    public function facilities()
+    {
+        // You can add facilities data here in the future
+        $totalFacilities = 0; // Placeholder for now
+        return view('products.facilities', compact('totalFacilities'));
+    }
 
+    /**
+     * Log system activity
+     */
+    private function logActivity($type, $description)
+    {
+        // Store activity in session for now (you can later move to database)
+        $activities = session('system_activities', []);
+        
+        $activity = [
+            'type' => $type,
+            'description' => $description,
+            'timestamp' => now(),
+            'time_ago' => 'just now'
+        ];
+        
+        // Add to beginning of array
+        array_unshift($activities, $activity);
+        
+        // Keep only last 20 activities
+        $activities = array_slice($activities, 0, 20);
+        
+        session(['system_activities' => $activities]);
+    }
+
+    /**
+     * Get recent activities for dashboard
+     */
+    private function getRecentActivities()
+    {
+        $activities = session('system_activities', []);
+        
+        // If no activities, return some default ones
+        if (empty($activities)) {
+            return [
+                [
+                    'type' => 'system',
+                    'description' => 'System backup completed',
+                    'time_ago' => '1 day ago',
+                    'color' => '#17a2b8'
+                ],
+                [
+                    'type' => 'system',
+                    'description' => 'Database maintenance',
+                    'time_ago' => '3 days ago',
+                    'color' => '#6c757d'
+                ]
+            ];
+        }
+        
+        // Add time formatting to activities
+        foreach ($activities as &$activity) {
+            $activity['time_ago'] = $this->formatTimeAgo($activity['timestamp']);
+            $activity['color'] = $this->getActivityColor($activity['type']);
+        }
+        
+        return $activities;
+    }
+
+    /**
+     * Format timestamp to human readable time ago
+     */
+    private function formatTimeAgo($timestamp)
+    {
+        $now = now();
+        $diff = $now->diffInMinutes($timestamp);
+        
+        if ($diff < 1) {
+            return 'just now';
+        } elseif ($diff < 60) {
+            return $diff . ' minutes ago';
+        } elseif ($diff < 1440) {
+            return floor($diff / 60) . ' hours ago';
+        } else {
+            return floor($diff / 1440) . ' days ago';
+        }
+    }
+
+    /**
+     * Get color for activity type
+     */
+    private function getActivityColor($type)
+    {
+        $colors = [
+            'resident_added' => '#28a745',
+            'resident_updated' => '#ffc107',
+            'resident_deleted' => '#dc3545',
+            'system' => '#17a2b8',
+            'login' => '#6c757d'
+        ];
+        
+        return $colors[$type] ?? '#6c757d';
+    }
 }

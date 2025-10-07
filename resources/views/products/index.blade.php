@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Products List</title>
+<title>Dashboard</title>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
@@ -116,6 +116,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   transform: translateY(-2px);
 }
 
+/* Quick Actions Hover Effects */
+.quick-action {
+  transition: all 0.3s ease;
+}
+.quick-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: #1a1a2e !important;
+}
+
+/* Analytics Cards Hover */
+.analytics-card {
+  transition: all 0.3s ease;
+}
+.analytics-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Activity Item Hover */
+.activity-item {
+  transition: background 0.2s ease;
+}
+.activity-item:hover {
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar { width: 70px; }
@@ -130,7 +158,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 <div class="sidebar">
   <div class="logo"><i class="fas fa-store"></i> <span>Logo</span></div>
   <nav class="nav-menu">
-    <a href="#" class="nav-item active"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+    <a href="#" class="nav-item active"><i class="fas fa-chart-line"></i><span>Program</span></a>
     <a href="#" class="nav-item"><i class="fas fa-boxes"></i><span>Services</span></a>
     <a href="#" class="nav-item"><i class="fas fa-users"></i><span>Events</span></a>
   </nav>
@@ -153,8 +181,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   </div>
   @if(session('Success'))
     <div class="alert success" id="successAlert">{{ session('Success') }}</div>
-  @else
-    <div class="alert" id="welcomeAlert">Welcome Admin!</div>
   @endif
 
 
@@ -166,22 +192,172 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
     </div>
     <div class="card">
       <div class="title">Total Facilities</div>
-      <a href="{{ route('product.index') }}" class="cta">View all</a>
+      <a href="{{ route('facilities') }}" class="cta">View all</a>
     </div>
     <div class="card">
       <div class="title">Total Kung Pagidnts</div>
-      <a href="{{ route('product.index') }}" class="cta">View all</a>
+      <a href="{{ route('resident.index') }}" class="cta">View all</a>
     </div>
   </div>
 
   <div class="panel-row">
-    <div class="panel" style="font-weight:700;color:#333;margin-bottom:8px;">Analytics</div>
+    <div class="panel">
+      <div style="font-weight:700;color:#333;margin-bottom:15px;font-size:16px;">📊 Analytics & Insights</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
+        <div class="analytics-card" style="background:#f8f9fa;padding:12px;border-radius:8px;text-align:center;">
+          <div style="font-size:24px;font-weight:700;color:#1a1a2e;">{{ $totalResidents ?? 0 }}</div>
+          <div style="font-size:12px;color:#666;">Total Residents</div>
+        </div>
+        <div class="analytics-card" style="background:#f8f9fa;padding:12px;border-radius:8px;text-align:center;">
+          <div style="font-size:24px;font-weight:700;color:#28a745;">{{ $newThisMonth ?? 0 }}</div>
+          <div style="font-size:12px;color:#666;">New This Month</div>
+        </div>
+      </div>
+      @php
+        $totalResidents = $totalResidents ?? 0;
+        $newThisMonth = $newThisMonth ?? 0;
+        $growthRate = $totalResidents > 0 ? round(($newThisMonth / $totalResidents) * 100, 1) : 0;
+        $trend = $growthRate > 10 ? 'high' : ($growthRate > 5 ? 'moderate' : 'low');
+      @endphp
+      <div style="background:#e3f2fd;padding:10px;border-radius:6px;border-left:4px solid #2196f3;">
+        <div style="font-size:13px;color:#1976d2;font-weight:600;">📈 Growth Rate</div>
+        <div style="font-size:18px;font-weight:700;color:#1976d2;">+{{ $growthRate }}%</div>
+      </div>
+    </div>
     <div class="panel small">
-      <div style="font-weight:700;color:#333;margin-bottom:8px;">Recent Activities</div>
+      <div style="font-weight:700;color:#333;margin-bottom:15px;font-size:16px;">🕒 Recent Activities</div>
+      <div style="max-height:200px;overflow-y:auto;">
+        @forelse($recentActivities as $activity)
+        <div class="activity-item" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+          <div style="width:8px;height:8px;background:{{ $activity['color'] }};border-radius:50%;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;color:#333;">{{ $activity['description'] }}</div>
+            <div style="font-size:11px;color:#666;">{{ $activity['time_ago'] }}</div>
+          </div>
+        </div>
+        @empty
+        <div style="text-align:center;color:#666;padding:20px;font-size:13px;">
+          No recent activities
+        </div>
+        @endforelse
+      </div>
     </div>
   </div>
 
-  <div class="panel full" style="font-weight:700;color:#333;margin-bottom:8px;">Ambot ano nadi pa</div>
+  <!-- Intelligent Decision Support Panel -->
+  <div class="panel full" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;margin-bottom:20px;">
+    <div style="font-weight:700;margin-bottom:15px;font-size:16px;display:flex;align-items:center;gap:8px;">
+      <i class="fas fa-brain"></i> Intelligent Insights & Recommendations
+    </div>
+    @php
+      $insights = [];
+      
+      // Calamity Preparedness & Emergency Response Insights
+      
+      // Critical: High resident count requires robust emergency plans
+      if($totalResidents > 20) {
+        $insights[] = [
+          'type' => 'critical',
+          'icon' => 'fa-triangle-exclamation',
+          'title' => 'Emergency Evacuation Plan Required',
+          'message' => "With {$totalResidents} residents, you need a comprehensive evacuation plan. Ensure all residents know evacuation routes and assembly points.",
+          'action' => 'Review Evacuation Procedures'
+        ];
+      }
+      
+      // New residents need emergency briefing
+      if($newThisMonth > 0) {
+        $insights[] = [
+          'type' => 'warning',
+          'icon' => 'fa-house-tsunami',
+          'title' => 'Disaster Preparedness Orientation',
+          'message' => "{$newThisMonth} new residents need emergency preparedness training. Brief them on calamity protocols, evacuation routes, and emergency contacts.",
+          'action' => 'Schedule Safety Orientation'
+        ];
+      }
+      
+      // Regular check recommendation
+      $insights[] = [
+        'type' => 'info',
+        'icon' => 'fa-kit-medical',
+        'title' => 'Emergency Supplies Check',
+        'message' => 'Conduct monthly inspection of emergency supplies: first aid kits, flashlights, water, food rations, and communication devices.',
+        'action' => 'Inspect Emergency Kit'
+      ];
+      
+      // Communication system readiness
+      $insights[] = [
+        'type' => 'info',
+        'icon' => 'fa-tower-broadcast',
+        'title' => 'Emergency Alert System',
+        'message' => 'Test your emergency communication system regularly. Ensure all residents have working contact numbers and know emergency hotlines.',
+        'action' => 'Test Alert System'
+      ];
+      
+      // Disaster preparedness recommendation
+      if($totalResidents > 0) {
+        $insights[] = [
+          'type' => 'success',
+          'icon' => 'fa-shield-heart',
+          'title' => 'Community Resilience Building',
+          'message' => 'Organize regular disaster preparedness drills. Practice earthquake, fire, and flood response scenarios with all residents.',
+          'action' => 'Schedule Disaster Drill'
+        ];
+      }
+    @endphp
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+      @foreach($insights as $insight)
+      <div style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);padding:15px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);">
+        <div style="display:flex;align-items:start;gap:12px;">
+          <div style="background:rgba(255,255,255,0.25);width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas {{ $insight['icon'] }}" style="font-size:18px;"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:14px;margin-bottom:6px;">{{ $insight['title'] }}</div>
+            <div style="font-size:12px;line-height:1.5;opacity:0.95;margin-bottom:10px;">{{ $insight['message'] }}</div>
+            <button onclick="handleInsightAction('{{ $insight['action'] }}')" style="background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+              {{ $insight['action'] }} →
+            </button>
+          </div>
+        </div>
+      </div>
+      @endforeach
+    </div>
+  </div>
+
+  <div class="panel full">
+    <div style="font-weight:700;color:#333;margin-bottom:15px;font-size:16px;">📋 Quick Actions</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;">
+      <a href="{{ route('home') }}" class="quick-action" style="background:#f8f9fa;padding:15px;border-radius:8px;text-decoration:none;color:#333;border:1px solid #e9ecef;display:flex;align-items:center;gap:10px;">
+        <i class="fas fa-users" style="color:#1a1a2e;font-size:18px;"></i>
+        <div>
+          <div style="font-weight:600;font-size:14px;">Manage Residents</div>
+          <div style="font-size:12px;color:#666;">View and edit residents</div>
+        </div>
+      </a>
+      <a href="{{ route('resident.create') }}" class="quick-action" style="background:#f8f9fa;padding:15px;border-radius:8px;text-decoration:none;color:#333;border:1px solid #e9ecef;display:flex;align-items:center;gap:10px;">
+        <i class="fas fa-user-plus" style="color:#28a745;font-size:18px;"></i>
+        <div>
+          <div style="font-weight:600;font-size:14px;">Add New Resident</div>
+          <div style="font-size:12px;color:#666;">Register new resident</div>
+        </div>
+      </a>
+      <a href="#" class="quick-action" style="background:#f8f9fa;padding:15px;border-radius:8px;text-decoration:none;color:#333;border:1px solid #e9ecef;display:flex;align-items:center;gap:10px;">
+        <i class="fas fa-chart-bar" style="color:#17a2b8;font-size:18px;"></i>
+        <div>
+          <div style="font-weight:600;font-size:14px;">Generate Report</div>
+          <div style="font-size:12px;color:#666;">Export resident data</div>
+        </div>
+      </a>
+      <a href="#" class="quick-action" style="background:#f8f9fa;padding:15px;border-radius:8px;text-decoration:none;color:#333;border:1px solid #e9ecef;display:flex;align-items:center;gap:10px;">
+        <i class="fas fa-cog" style="color:#6c757d;font-size:18px;"></i>
+        <div>
+          <div style="font-weight:600;font-size:14px;">Settings</div>
+          <div style="font-size:12px;color:#666;">System configuration</div>
+        </div>
+      </a>
+    </div>
+  </div>
 </div>
 
 <!-- Logout Confirmation Modal -->
@@ -207,6 +383,122 @@ function openLogoutModal() {
 function closeLogoutModal() {
   document.getElementById('logoutModalOverlay').style.display = 'none';
   document.getElementById('logoutModal').style.display = 'none';
+}
+
+// Calamity-Focused Intelligent Decision Support Handler
+function handleInsightAction(action) {
+  const actions = {
+    'Review Evacuation Procedures': () => {
+      alert('🚨 EVACUATION PROCEDURES\n\n' +
+            'CRITICAL ACTIONS:\n\n' +
+            '✓ Map all evacuation routes\n' +
+            '✓ Designate 3 assembly points\n' +
+            '✓ Assign evacuation coordinators\n' +
+            '✓ Post evacuation maps in visible areas\n' +
+            '✓ Conduct headcount procedures\n' +
+            '✓ Identify residents needing assistance\n\n' +
+            'EMERGENCY HOTLINES:\n' +
+            '• NDRRMC: 911\n' +
+            '• Red Cross: 143\n' +
+            '• Fire: 160\n\n' +
+            'Redirecting to resident management...');
+      window.location.href = '{{ route("home") }}';
+    },
+    'Schedule Safety Orientation': () => {
+      alert('🎓 DISASTER PREPAREDNESS ORIENTATION\n\n' +
+            'TOPICS TO COVER:\n\n' +
+            '1. EARTHQUAKE RESPONSE\n' +
+            '   • Drop, Cover, Hold On\n' +
+            '   • Safe zones in building\n' +
+            '   • Post-quake procedures\n\n' +
+            '2. FIRE SAFETY\n' +
+            '   • Fire escape routes\n' +
+            '   • Use of fire extinguishers\n' +
+            '   • Stop, Drop, Roll technique\n\n' +
+            '3. FLOOD PREPAREDNESS\n' +
+            '   • Evacuation triggers\n' +
+            '   • Emergency go-bag essentials\n' +
+            '   • High ground locations\n\n' +
+            '4. EMERGENCY CONTACTS\n' +
+            '   • Local emergency services\n' +
+            '   • Family contact tree\n\n' +
+            'Setting up orientation schedule...');
+      window.location.href = '{{ route("home") }}';
+    },
+    'Inspect Emergency Kit': () => {
+      alert('🏥 EMERGENCY KIT INSPECTION CHECKLIST\n\n' +
+            'ESSENTIAL SUPPLIES (Check Monthly):\n\n' +
+            '□ First Aid Kit (bandages, antiseptic, medications)\n' +
+            '□ Flashlights + Extra Batteries\n' +
+            '□ Portable Radio (battery/solar powered)\n' +
+            '□ Drinking Water (3-day supply per person)\n' +
+            '□ Non-perishable Food (canned goods, biscuits)\n' +
+            '□ Emergency Whistle\n' +
+            '□ Matches in waterproof container\n' +
+            '□ Important Documents (sealed plastic)\n' +
+            '□ Cash + Coins\n' +
+            '□ Multi-tool/Swiss Knife\n' +
+            '□ Blankets/Sleeping Bags\n' +
+            '□ Hygiene Supplies\n' +
+            '□ Mobile Power Banks\n\n' +
+            'INSPECT: Replace expired items immediately!\n\n' +
+            'Opening resident records...');
+      window.location.href = '{{ route("home") }}';
+    },
+    'Test Alert System': () => {
+      alert('📡 EMERGENCY COMMUNICATION SYSTEM TEST\n\n' +
+            'TESTING PROCEDURES:\n\n' +
+            '1. SMS ALERT SYSTEM\n' +
+            '   • Verify all resident phone numbers\n' +
+            '   • Send test alert message\n' +
+            '   • Confirm receipt rate\n\n' +
+            '2. SIREN/ALARM SYSTEM\n' +
+            '   • Test alarm audibility\n' +
+            '   • Check battery backup\n' +
+            '   • Ensure 360° coverage\n\n' +
+            '3. COMMUNITY ALERT NETWORK\n' +
+            '   • Floor/building coordinators\n' +
+            '   • Door-to-door notification plan\n' +
+            '   • Megaphone availability\n\n' +
+            '4. EMERGENCY HOTLINES\n' +
+            '   • Test all posted numbers\n' +
+            '   • Update contact list\n\n' +
+            'NEXT: Schedule monthly communication drills\n\n' +
+            'Accessing resident contacts...');
+      window.location.href = '{{ route("home") }}';
+    },
+    'Schedule Disaster Drill': () => {
+      alert('🏃 DISASTER PREPAREDNESS DRILL\n\n' +
+            'DRILL SCENARIOS TO PRACTICE:\n\n' +
+            '🌊 FLOOD DRILL\n' +
+            '   • Vertical evacuation to upper floors\n' +
+            '   • Securing important documents\n' +
+            '   • Shutting off utilities\n\n' +
+            '🔥 FIRE DRILL\n' +
+            '   • Evacuation within 3 minutes\n' +
+            '   • Using fire exits (not elevators)\n' +
+            '   • Assembly point roll call\n\n' +
+            '⚡ EARTHQUAKE DRILL\n' +
+            '   • Drop, Cover, Hold On practice\n' +
+            '   • Safe zone identification\n' +
+            '   • Post-quake evacuation\n\n' +
+            '🌪️ TYPHOON PREPAREDNESS\n' +
+            '   • Securing outdoor items\n' +
+            '   • Window reinforcement\n' +
+            '   • Shelter-in-place procedures\n\n' +
+            'FREQUENCY: Conduct drills quarterly\n' +
+            'TIMING: Unannounced for realism\n\n' +
+            'Organizing drill schedule...');
+      window.location.href = '{{ route("home") }}';
+    }
+  };
+  
+  const handler = actions[action];
+  if (handler) {
+    handler();
+  } else {
+    alert('⚠️ Feature Coming Soon!\n\nThis calamity preparedness feature is being developed.\n\nIn the meantime, please consult with your local disaster risk reduction office for guidance.');
+  }
 }
 
 setTimeout(()=>{

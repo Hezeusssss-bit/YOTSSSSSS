@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Products List</title>
+<title>Residents List</title>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
@@ -130,6 +130,30 @@ tbody tr:hover { background: #fafafa; }
 }
 .error-message { color: #f44336; font-size: 12px; }
 
+/* Resident Details Modal */
+.resident-details { margin: 20px 0; }
+.detail-row { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 12px 0; 
+  border-bottom: 1px solid #f0f0f0; 
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-row label { 
+  font-weight: 600; 
+  color: #333; 
+  font-size: 14px; 
+  min-width: 120px; 
+}
+.detail-row span { 
+  color: #666; 
+  font-size: 14px; 
+  text-align: right; 
+  flex: 1; 
+  margin-left: 20px; 
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar { width: 70px; }
@@ -146,7 +170,7 @@ tbody tr:hover { background: #fafafa; }
 <div class="sidebar">
   <div class="logo"><i class="fas fa-store"></i> <span>Logo</span></div>
   <nav class="nav-menu">
-    <a href="products" class="nav-item active"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+    <a href="{{ route('resident.index') }}" class="nav-item active"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
     <a href="#" class="nav-item"><i class="fas fa-boxes"></i><span>Services</span></a>
     <a href="#" class="nav-item"><i class="fas fa-users"></i><span>Events</span></a>
   </nav>
@@ -173,8 +197,6 @@ tbody tr:hover { background: #fafafa; }
 
   @if(session('Success'))
     <div class="alert success" id="successAlert">{{ session('Success') }}</div>
-  @else
-    <div class="alert" id="welcomeAlert">Welcome Admin!</div>
   @endif
 
   <div class="container">
@@ -196,12 +218,12 @@ tbody tr:hover { background: #fafafa; }
 
     <!-- Table -->
     <div class="table-wrapper">
-      <table id="productsTable">
+      <table id="residentsTable">
         <thead>
           <tr>
             <th>ID</th>
             <th class="sortable" onclick="sortTable(1,'string')">LASTNAME <i class="fas fa-sort sort-arrow"></i></th>
-            <th class="sortable" onclick="sortTable(2,'string')">NAME <i class="fas fa-sort sort-arrow"></i></th>
+            <th class="sortable" onclick="sortTable(2,'string')">FIRSTNAME <i class="fas fa-sort sort-arrow"></i></th>
             <th>AGE</th>
             <th>ADDRESS</th>
             <th>ADDED ON</th>
@@ -209,25 +231,25 @@ tbody tr:hover { background: #fafafa; }
           </tr>
         </thead>
         <tbody>
-          @forelse($products as $product)
+          @forelse($residents as $resident)
           <tr>
-            <td>{{ $product->id }}</td>
-            <td>{{ $product->qty }}</td>
-            <td>{{ $product->name }}</td>
-            <td>{{ $product->price }}</td>
-            <td>{{ $product->description }}</td>
-            <td>{{ $product->created_at->format('M d, Y') }}</td>
+            <td>{{ $resident->id }}</td>
+            <td>{{ $resident->qty }}</td>
+            <td>{{ $resident->name }}</td>
+            <td>{{ $resident->price }}</td>
+            <td>{{ $resident->description }}</td>
+            <td>{{ $resident->created_at->format('M d, Y') }}</td>
             <td>
               <div class="actions">
-                <a href="{{ route('product.show', $product->id) }}" class="btn-icon view"><i class="fas fa-eye"></i></a>
-                <a href="#" class="btn-icon edit" onclick="openEditModal('{{ route('product.update', $product->id) }}','{{ addslashes($product->name) }}','{{ $product->qty }}','{{ $product->price }}','{{ addslashes($product->description) }}'); return false;"><i class="fas fa-edit"></i></a>
-                <button type="button" class="btn-icon delete" onclick="openDeleteModal('{{ route('product.destroy', $product->id) }}')"><i class="fas fa-trash"></i></button>
+                <button type="button" class="btn-icon view" onclick="openViewModal({{ $resident->id }})"><i class="fas fa-eye"></i></button>
+                <button type="button" class="btn-icon edit" onclick="openEditModal('{{ route('resident.update', $resident->id) }}','{{ addslashes($resident->name) }}','{{ $resident->qty }}','{{ $resident->price }}','{{ addslashes($resident->description) }}')"><i class="fas fa-edit"></i></button>
+                <button type="button" class="btn-icon delete" onclick="openDeleteModal('{{ route('resident.destroy', $resident->id) }}')"><i class="fas fa-trash"></i></button>
               </div>
             </td>
           </tr>
           @empty
           <tr>
-            <td colspan="7" style="text-align:center;color:#999;">No products found.</td>
+            <td colspan="7" style="text-align:center;color:#999;">No residents found.</td>
           </tr>
           @endforelse
         </tbody>
@@ -247,20 +269,20 @@ tbody tr:hover { background: #fafafa; }
         <span>per page</span>
         <span style="margin-left:16px;color:#666;">Total Residents: <strong>{{ number_format($totalResidents) }}</strong></span>
       </div>
-      {{ $products->appends(request()->query())->links('pagination::bootstrap-4') }}
+      {{ $residents->appends(request()->query())->links('pagination::bootstrap-4') }}
     </div>
   </div>
 </div>
 
-<!-- Add Product Modal -->
-<div class="modal-overlay" id="addProductOverlay"></div>
-<div class="modal" id="addProductModal">
-  <h2>Create New Product</h2>
-  <form method="POST" action="{{ route('product.store') }}">
+<!-- Add Resident Modal -->
+<div class="modal-overlay" id="addResidentOverlay"></div>
+<div class="modal" id="addResidentModal">
+  <h2>Create New Resident</h2>
+  <form method="POST" action="{{ route('resident.store') }}">
     @csrf
     <div>
-      <label>Name</label>
-      <input type="text" name="name" placeholder="Product name" value="{{ old('name') }}">
+      <label>Firstname  </label>
+      <input type="text" name="name" placeholder="First name" value="{{ old('name') }}">
       @error('name')<div class="error-message">{{ $message }}</div>@enderror
     </div>
     <div>
@@ -285,26 +307,26 @@ tbody tr:hover { background: #fafafa; }
   </form>
 </div>
 
-  <!-- Edit Product Modal (same design as Add) -->
-  <div class="modal-overlay" id="editProductOverlay"></div>
-  <div class="modal" id="editProductModal">
-    <h2>Update Product</h2>
-    <form id="editProductForm" method="POST">
+  <!-- Edit Resident Modal (same design as Add) -->
+  <div class="modal-overlay" id="editResidentOverlay" onclick="closeEditModal()"></div>
+  <div class="modal" id="editResidentModal">
+    <h2>Update Resident</h2>
+    <form id="editResidentForm" method="POST" onsubmit="return confirmEdit()">
       @csrf
       @method('PUT')
       <div>
-        <label>Name</label>
-        <input type="text" name="name" id="edit_name" placeholder="Product name">
+        <label>Firstname</label>
+        <input type="text" name="name" id="edit_name" placeholder="First name" required>
         @error('name')<div class="error-message">{{ $message }}</div>@enderror
       </div>
       <div>
         <label>Lastname</label>
-        <input type="text" name="qty" id="edit_qty" placeholder="Lastname">
+        <input type="text" name="qty" id="edit_qty" placeholder="Lastname" required>
         @error('qty')<div class="error-message">{{ $message }}</div>@enderror
       </div>
       <div>
         <label>Age</label>
-        <input type="text" name="price" id="edit_price" placeholder="Age">
+        <input type="text" name="price" id="edit_price" placeholder="Age" required>
         @error('price')<div class="error-message">{{ $message }}</div>@enderror
       </div>
       <div>
@@ -313,17 +335,56 @@ tbody tr:hover { background: #fafafa; }
         @error('description')<div class="error-message">{{ $message }}</div>@enderror
       </div>
       <div class="modal-buttons" style="margin-top:15px;">
-        <button type="submit" class="btn-add">Save</button>
+        <button type="submit" class="btn-add">Save Changes</button>
         <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
       </div>
     </form>
   </div>
 
+<!-- View Details Modal -->
+<div class="modal-overlay" id="viewResidentOverlay"></div>
+<div class="modal" id="viewResidentModal">
+  <h2>Resident Details</h2>
+  <div class="resident-details">
+    <div class="detail-row">
+      <label>ID:</label>
+      <span id="view_id">-</span>
+    </div>
+    <div class="detail-row">
+      <label>First Name:</label>
+      <span id="view_name">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Last Name:</label>
+      <span id="view_qty">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Age:</label>
+      <span id="view_price">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Address:</label>
+      <span id="view_description">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Created:</label>
+      <span id="view_created">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Last Updated:</label>
+      <span id="view_updated">-</span>
+    </div>
+  </div>
+  <div class="modal-buttons">
+    <button class="btn-cancel" onclick="closeViewModal()">Close</button>
+  </div>
+</div>
+
 <!-- Delete Modal -->
-<div class="modal-overlay" id="modalOverlay"></div>
+<div class="modal-overlay" id="modalOverlay" onclick="closeDeleteModal()"></div>
 <div class="modal" id="deleteModal">
-  <h2>Delete Product</h2>
-  <p>Are you sure you want to delete this product?</p>
+  <h2>Delete Resident</h2>
+  <p>Are you sure you want to delete this resident? This action cannot be undone.</p>
   <div class="modal-buttons">
     <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
     <form id="deleteForm" method="POST" style="display:inline;">
@@ -331,6 +392,35 @@ tbody tr:hover { background: #fafafa; }
       @method('DELETE')
       <button type="submit" class="btn-confirm">Delete</button>
     </form>
+  </div>
+</div>
+
+<!-- Edit Confirmation Modal -->
+<div class="modal-overlay" id="editConfirmOverlay" onclick="closeEditConfirmModal()"></div>
+<div class="modal" id="editConfirmModal">
+  <h2>Confirm Changes</h2>
+  <p style="margin-bottom: 15px;">Please confirm the following details are correct:</p>
+  <div class="resident-details">
+    <div class="detail-row">
+      <label>Firstname:</label>
+      <span id="confirm_name">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Lastname:</label>
+      <span id="confirm_qty">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Age:</label>
+      <span id="confirm_price">-</span>
+    </div>
+    <div class="detail-row">
+      <label>Address:</label>
+      <span id="confirm_description">-</span>
+    </div>
+  </div>
+  <div class="modal-buttons" style="margin-top: 20px;">
+    <button class="btn-cancel" onclick="closeEditConfirmModal()">Cancel</button>
+    <button class="btn-add" onclick="submitEditForm()">Save Changes</button>
   </div>
 </div>
 
@@ -345,17 +435,17 @@ function closeDeleteModal() {
   document.getElementById('deleteModal').style.display = 'none';
 }
 function openAddModal() {
-  document.getElementById('addProductOverlay').style.display = 'block';
-  document.getElementById('addProductModal').style.display = 'block';
+  document.getElementById('addResidentOverlay').style.display = 'block';
+  document.getElementById('addResidentModal').style.display = 'block';
 }
 function closeAddModal() {
-  document.getElementById('addProductOverlay').style.display = 'none';
-  document.getElementById('addProductModal').style.display = 'none';
+  document.getElementById('addResidentOverlay').style.display = 'none';
+  document.getElementById('addResidentModal').style.display = 'none';
 }
 function openEditModal(action, name, qty, price, description) {
-  document.getElementById('editProductOverlay').style.display = 'block';
-  document.getElementById('editProductModal').style.display = 'block';
-  const form = document.getElementById('editProductForm');
+  document.getElementById('editResidentOverlay').style.display = 'block';
+  document.getElementById('editResidentModal').style.display = 'block';
+  const form = document.getElementById('editResidentForm');
   form.action = action;
   document.getElementById('edit_name').value = name;
   document.getElementById('edit_qty').value = qty;
@@ -363,8 +453,65 @@ function openEditModal(action, name, qty, price, description) {
   document.getElementById('edit_description').value = description;
 }
 function closeEditModal() {
-  document.getElementById('editProductOverlay').style.display = 'none';
-  document.getElementById('editProductModal').style.display = 'none';
+  document.getElementById('editResidentOverlay').style.display = 'none';
+  document.getElementById('editResidentModal').style.display = 'none';
+}
+function confirmEdit() {
+  // Prevent default form submission
+  event.preventDefault();
+  
+  // Get form values
+  const firstname = document.getElementById('edit_name').value;
+  const lastname = document.getElementById('edit_qty').value;
+  const age = document.getElementById('edit_price').value;
+  const address = document.getElementById('edit_description').value || 'Not specified';
+  
+  // Populate confirmation modal
+  document.getElementById('confirm_name').textContent = firstname;
+  document.getElementById('confirm_qty').textContent = lastname;
+  document.getElementById('confirm_price').textContent = age;
+  document.getElementById('confirm_description').textContent = address;
+  
+  // Show confirmation modal
+  document.getElementById('editConfirmOverlay').style.display = 'block';
+  document.getElementById('editConfirmModal').style.display = 'block';
+  
+  return false;
+}
+function closeEditConfirmModal() {
+  document.getElementById('editConfirmOverlay').style.display = 'none';
+  document.getElementById('editConfirmModal').style.display = 'none';
+}
+function submitEditForm() {
+  // Close confirmation modal
+  closeEditConfirmModal();
+  // Submit the form
+  document.getElementById('editResidentForm').submit();
+}
+function openViewModal(residentId) {
+  // Fetch resident details via AJAX
+  fetch(`/residents/${residentId}`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('view_id').textContent = data.id;
+      document.getElementById('view_name').textContent = data.name;
+      document.getElementById('view_qty').textContent = data.qty;
+      document.getElementById('view_price').textContent = data.price;
+      document.getElementById('view_description').textContent = data.description || '-';
+      document.getElementById('view_created').textContent = data.created_at;
+      document.getElementById('view_updated').textContent = data.updated_at;
+      
+      document.getElementById('viewResidentOverlay').style.display = 'block';
+      document.getElementById('viewResidentModal').style.display = 'block';
+    })
+    .catch(error => {
+      console.error('Error fetching resident details:', error);
+      alert('Error loading resident details');
+    });
+}
+function closeViewModal() {
+  document.getElementById('viewResidentOverlay').style.display = 'none';
+  document.getElementById('viewResidentModal').style.display = 'none';
 }
 function confirmLogout(button) {
   if(confirm('Are you sure you want to log out?')) button.closest('form').submit();
@@ -375,7 +522,7 @@ setTimeout(()=>{
 },3000);
 function liveSearch() {
   const input=document.getElementById('searchInput').value.toLowerCase();
-  const rows=document.getElementById('productsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+  const rows=document.getElementById('residentsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
   for(let row of rows){
     let match=false;
     for(let cell of row.getElementsByTagName('td')){
@@ -393,7 +540,7 @@ function changePerPage(value){
 
 // Sort table by column index and type ('string' or 'number')
 function sortTable(columnIndex, type){
-  const table = document.getElementById('productsTable');
+  const table = document.getElementById('residentsTable');
   const tbody = table.tBodies[0];
   const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
   const current = table.getAttribute('data-sort-col');

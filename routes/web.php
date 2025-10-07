@@ -15,15 +15,15 @@ use App\Http\Controllers\ProductController;
 */
 
 Route::middleware('authCheck')->group(function () {
-    // Resource routes for products with product.* names (for compatibility)
-    Route::resource('products', App\Http\Controllers\ProductController::class)->names([
-        'index' => 'product.index',
-        'create' => 'product.create',
-        'store' => 'product.store',
-        'show' => 'product.show',
-        'edit' => 'product.edit',
-        'update' => 'product.update',
-        'destroy' => 'product.destroy',
+    // Resource routes for residents with resident.* names
+    Route::resource('residents', App\Http\Controllers\ProductController::class)->names([
+        'index' => 'resident.index',
+        'create' => 'resident.create',
+        'store' => 'resident.store',
+        'show' => 'resident.show',
+        'edit' => 'resident.edit',
+        'update' => 'resident.update',
+        'destroy' => 'resident.destroy',
     ]);
     
     Route::get('/dashboard', function () {
@@ -41,11 +41,13 @@ Route::get('/login', [ProductController::class, 'login'])->name('login');
 Route::post('/login', [ProductController::class, 'loginPost'])->name('login.post');
 Route::post('/logout', [ProductController::class, 'logout'])->name('logout');
 
-Route::get('/products', [ProductController::class, 'index'])->name('product.index');
-Route::get('/products/create', [ProductController::class, 'create'])->name('product.create');
-Route::post('/products', [ProductController::class, 'store'])->name('product.store');
-Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('product.edit');
-Route::put('/products/{product}', [ProductController::class, 'update'])->name('product.update');
-Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
+Route::get('/residents', [ProductController::class, 'index'])->name('resident.index');
+Route::get('/residents/create', [ProductController::class, 'create'])->name('resident.create');
+Route::post('/residents', [ProductController::class, 'store'])->name('resident.store');
+Route::get('/residents/{resident}', [ProductController::class, 'show'])->name('resident.show');
+Route::get('/residents/{resident}/edit', [ProductController::class, 'edit'])->name('resident.edit');
+Route::put('/residents/{resident}', [ProductController::class, 'update'])->name('resident.update');
+Route::delete('/residents/{resident}', [ProductController::class, 'destroy'])->name('resident.destroy');
 
 Route::get('/home', [ProductController::class, 'home'])->name('home');
+Route::get('/facilities', [ProductController::class, 'facilities'])->name('facilities');

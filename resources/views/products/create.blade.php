@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Create Product</title>
+<title>Create Resident</title>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
@@ -67,7 +67,7 @@ input[type="text"]:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,1
   </div>
   <nav class="nav-menu">
     <a href="{{ url('/home') }}" class="nav-item"><i class="fas fa-home"></i> <span>Home</span></a>
-    <a href="{{ route('product.index') }}" class="nav-item active"><i class="fas fa-boxes"></i> <span>Products</span></a>
+    <a href="{{ route('resident.index') }}" class="nav-item active"><i class="fas fa-boxes"></i> <span>Residents</span></a>
     <a href="#" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
   </nav>
 </div>
@@ -76,7 +76,7 @@ input[type="text"]:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,1
 <div class="main-content">
     <!-- Header -->
     <div class="header">
-        <h1>Create Product</h1>
+        <h1>Create Resident</h1>
         <div class="header-icons">
             <button class="icon-btn"><i class="fas fa-bell"></i></button>
             <button class="icon-btn"><i class="fas fa-user"></i></button>
@@ -90,12 +90,12 @@ input[type="text"]:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,1
 
     <!-- Form Container -->
     <div class="container">
-        <form method="POST" action="{{ route('product.store') }}">
+        <form method="POST" action="{{ route('resident.store') }}">
             @csrf
             <div class="filter-section">
                 <div>
                     <label>Name</label>
-                    <input type="text" name="name" placeholder="Product name" value="{{ old('name') }}" />
+                    <input type="text" name="name" placeholder="First name" value="{{ old('name') }}" />
                     @error('name')<div class="error-message">{{ $message }}</div>@enderror
                 </div>
 
@@ -121,13 +121,13 @@ input[type="text"]:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,1
                 </div>
 
                 <div>
-                    <input type="submit" value="Save New Product" class="btn-add"/>
+                    <input type="submit" value="Save New Resident" class="btn-add"/>
                 </div>
             </div>
         </form>
 
         <div class="return-btn">
-            <a href="{{ route('product.index') }}">← Return to Product List</a>
+            <a href="{{ route('resident.index') }}">← Return to Resident List</a>
         </div>
     </div>
 </div>
