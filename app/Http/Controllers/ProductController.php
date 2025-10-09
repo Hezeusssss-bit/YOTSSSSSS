@@ -174,6 +174,11 @@ public function index(Request $request)
         return view('products.facilities', compact('totalFacilities'));
     }
 
+    public function school()
+    {
+        return view('products.school');
+    }
+
     /**
      * Log system activity
      */

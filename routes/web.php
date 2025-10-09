@@ -51,3 +51,4 @@ Route::delete('/residents/{resident}', [ProductController::class, 'destroy'])->n
 
 Route::get('/home', [ProductController::class, 'home'])->name('home');
 Route::get('/facilities', [ProductController::class, 'facilities'])->name('facilities');
+Route::get('/school', [ProductController::class, 'school'])->name('school');

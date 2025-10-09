@@ -100,12 +100,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
         <span class="facility-status status-available">Available</span>
       </div>
 
-      <div class="facility-card">
+      <a href="{{ route('school') }}" class="facility-card" style="text-decoration: none; color: inherit;">
         <div class="facility-icon"><i class="fas fa-school"></i></div>
         <div class="facility-title">Schools</div>
         <div class="facility-description">For Evacuation and Emergency Response</div>
         <span class="facility-status status-available">Available</span>
-      </div>
+      </a>
 
 
       <div class="facility-card">
