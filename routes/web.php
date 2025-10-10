@@ -51,4 +51,9 @@ Route::delete('/residents/{resident}', [ProductController::class, 'destroy'])->n
 
 Route::get('/home', [ProductController::class, 'home'])->name('home');
 Route::get('/facilities', [ProductController::class, 'facilities'])->name('facilities');
+Route::get('/facilities/community-center', [ProductController::class, 'communityCenter'])->name('community');
+Route::get('/facilities/health-center', [ProductController::class, 'healthCenter'])->name('health');
+Route::get('/facilities/emergency-shelter', [ProductController::class, 'emergencyShelter'])->name('shelter');
 Route::get('/school', [ProductController::class, 'school'])->name('school');
+Route::get('/try-all', [ProductController::class, 'tryAll'])->name('tryall');
+Route::post('/send-evacuation-sms', [App\Http\Controllers\SmsController::class, 'sendEvacuationAlert'])->name('send.evacuation.sms');

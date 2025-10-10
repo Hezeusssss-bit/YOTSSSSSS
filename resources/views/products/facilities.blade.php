@@ -86,19 +86,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
     <h2 style="margin-bottom: 20px; color: #1a1a2e;">Available Facilities</h2>
     
     <div class="facility-grid">
-      <div class="facility-card">
+      <a href="{{ route('community') }}" class="facility-card" style="text-decoration: none; color: inherit;">
         <div class="facility-icon"><i class="fas fa-home"></i></div>
         <div class="facility-title">Community Center</div>
         <div class="facility-description">Main gathering space for community events, meetings, and activities.</div>
         <span class="facility-status status-available">Available</span>
-      </div>
+      </a>
 
-      <div class="facility-card">
+      <a href="{{ route('health') }}" class="facility-card" style="text-decoration: none; color: inherit;">
         <div class="facility-icon"><i class="fas fa-hospital"></i></div>
         <div class="facility-title">Health Center</div>
         <div class="facility-description">Medical facility providing basic healthcare services and emergency response.</div>
         <span class="facility-status status-available">Available</span>
-      </div>
+      </a>
 
       <a href="{{ route('school') }}" class="facility-card" style="text-decoration: none; color: inherit;">
         <div class="facility-icon"><i class="fas fa-school"></i></div>
@@ -108,12 +108,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
       </a>
 
 
-      <div class="facility-card">
+      <a href="{{ route('shelter') }}" class="facility-card" style="text-decoration: none; color: inherit;">
         <div class="facility-icon"><i class="fas fa-shield-alt"></i></div>
         <div class="facility-title">Emergency Shelter</div>
         <div class="facility-description">Designated safe area for calamity evacuation and emergency situations.</div>
         <span class="facility-status status-available">Available</span>
-      </div>
+      </a>
 
 
 

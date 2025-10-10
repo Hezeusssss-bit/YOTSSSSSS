@@ -53,6 +53,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .status-unavailable { background: #f8d7da; color: #721c24; }
 .status-maintenance { background: #fff3cd; color: #856404; }
 
+/* Inspect Modal */
+.inspect-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1000; }
+.inspect-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; border-radius: 12px; padding: 24px; width: 520px; max-width: 92%; display: none; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.inspect-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.inspect-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+.inspect-actions-inline { display: flex; align-items: center; gap: 10px; }
+.inspect-edit { background: transparent; border: none; font-size: 18px; cursor: pointer; color: #1a1a2e; }
+.inspect-close { background: transparent; border: none; font-size: 20px; cursor: pointer; color: #333; }
+.inspect-body { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 14px; }
+.inspect-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.inspect-label { color: #555; font-weight: 600; }
+.inspect-value { color: #1a1a2e; text-align: right; }
+.inspect-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+.inspect-btn { padding: 10px 16px; border-radius: 8px; border: 1px solid #e9ecef; background: #f8f9fa; cursor: pointer; font-weight: 600; }
+.inspect-btn.primary { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+.inspect-select { display: none; margin-top: 8px; }
+.inspect-select select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #e0e0e0; background: #fff; }
+.inspect-input { display: none; margin-top: 6px; }
+.inspect-input input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #e0e0e0; background: #fff; }
+
 /* Emergency Info */
 .emergency-info { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 12px; padding: 20px; margin-top: 20px; }
 .emergency-info h3 { color: #856404; font-size: 18px; margin-bottom: 10px; }
@@ -103,6 +123,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
     </div>
   </div>
 
+  <!-- Inspect Modal -->
+  <div class="inspect-overlay" id="inspectOverlay"></div>
+  <div class="inspect-modal" id="inspectModal">
+    <div class="inspect-header">
+      <div class="inspect-title" id="inspectTitle">School Details</div>
+      <div class="inspect-actions-inline">
+        <button class="inspect-edit" id="inspectEdit" title="Edit"><i class="fas fa-pen"></i></button>
+        <button class="inspect-close" id="inspectClose" aria-label="Close">&times;</button>
+      </div>
+    </div>
+    <div class="inspect-body">
+      <div class="inspect-row"><span class="inspect-label">Status:</span><span class="inspect-value"><span id="inspectStatus" class="feature-status">-</span></span></div>
+      <div class="inspect-select" id="inspectStatusSelectWrap">
+        <select id="inspectStatusSelect">
+          <option value="available">Available</option>
+          <option value="maintenance">Under Maintenance</option>
+          <option value="unavailable">Unavailable</option>
+        </select>
+      </div>
+      <div class="inspect-row"><span class="inspect-label">Number of Family:</span><span class="inspect-value" id="inspectFamilies">-</span></div>
+      <div class="inspect-input" id="inspectFamiliesInputWrap"><input type="number" id="inspectFamiliesInput" min="0" /></div>
+      <div class="inspect-row"><span class="inspect-label">Number of Rooms:</span><span class="inspect-value" id="inspectRooms">-</span></div>
+      <div class="inspect-input" id="inspectRoomsInputWrap"><input type="number" id="inspectRoomsInput" min="0" /></div>
+      <div class="inspect-row"><span class="inspect-label">Number of Buildings:</span><span class="inspect-value" id="inspectBuildings">-</span></div>
+      <div class="inspect-input" id="inspectBuildingsInputWrap"><input type="number" id="inspectBuildingsInput" min="0" /></div>
+    </div>
+    <div class="inspect-actions">
+      <button class="inspect-btn" id="inspectCancel">Close</button>
+      <button class="inspect-btn primary" id="inspectOk">OK</button>
+    </div>
+  </div>
+
   <div class="container">
     <a href="{{ route('facilities') }}" class="back-btn">
       <i class="fas fa-arrow-left"></i>
@@ -116,7 +168,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
         <p><strong>Emergency Role:</strong> Designated evacuation center and emergency response hub</p>
         <p><strong>Capacity:</strong> Can accommodate up to 500 people during emergencies</p>
         <p><strong>Location:</strong> Central area of the community for easy access</p>
-        <p><strong>Status:</strong> <span style="color: #28a745; font-weight: 600;">Operational</span></p>
       </div>
       <div class="school-image">
         <i class="fas fa-school"></i>
@@ -126,35 +177,35 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
     <h2 style="margin: 30px 0 20px 0; color: #1a1a2e;">Available Features</h2>
     
     <div class="features-grid">
-      <div class="feature-card">
+      <div class="feature-card inspect-card" data-name="Hinigaran National High School" data-families="250" data-rooms="35" data-buildings="4" data-status="available">
         <div class="feature-icon"><i class="fas fa-school"></i></div>
         <div class="feature-title">Hinigaran National High School</div>
         <div class="feature-description"> Address : 7V83+P53, Barangay III, Hinigaran, Negros Occidental</div>
         <span class="feature-status status-available">Available</span>
       </div>
 
-      <div class="feature-card">
+      <div class="feature-card inspect-card" data-name="Hinigaran Institute" data-families="180" data-rooms="22" data-buildings="3" data-status="maintenance">
         <div class="feature-icon"><i class="fas fa-school"></i></div>
         <div class="feature-title">Hinigaran Institute </div>
         <div class="feature-description">Address : 7VG3+28Q, Lopez Jaena St, Barangay 1, Hinigaran, Negros Occidental</div>
         <span class="feature-status status-maintenance">Under Maintenance</span>
       </div>
 
-      <div class="feature-card">
+      <div class="feature-card inspect-card" data-name="Madeline Academy" data-families="120" data-rooms="18" data-buildings="2" data-status="available">
         <div class="feature-icon"><i class="fas fa-school"></i></div>
         <div class="feature-title">Madeline Academy</div>
         <div class="feature-description">Address : 7VC2+MG7, Rizal Street, Negros South Road, Hinigaran, 6106 Negros Occidental</div>
         <span class="feature-status status-available">Available</span>
       </div>
 
-      <div class="feature-card">
+      <div class="feature-card inspect-card" data-name="Hinigaran Elementary School A" data-families="90" data-rooms="14" data-buildings="2" data-status="unavailable">
         <div class="feature-icon"><i class="fas fa-school"></i></div>
         <div class="feature-title"> Hinigaran Elementary School A</div>
         <div class="feature-description">Address : 7VC2+Q7G, Osmeña St, Hinigaran, 6106 Negros Occidental</div>
         <span class="feature-status status-unavailable">Unavailable</span>
       </div>
 
-      <div class="feature-card">
+      <div class="feature-card inspect-card" data-name="Hinigaran Elementary School B" data-families="95" data-rooms="15" data-buildings="2" data-status="available">
         <div class="feature-icon"><i class="fas fa-school"></i></div>
         <div class="feature-title">Hinigaran Elementary School B</div>
         <div class="feature-description">Address : 7VC2+623, Rizal St, Hinigaran, Negros Occidental</div>
@@ -172,3 +223,140 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 
 </body>
 </html>
+
+<script>
+// Modal elements
+const overlay = document.getElementById('inspectOverlay');
+const modal = document.getElementById('inspectModal');
+const titleEl = document.getElementById('inspectTitle');
+const familiesEl = document.getElementById('inspectFamilies');
+const roomsEl = document.getElementById('inspectRooms');
+const buildingsEl = document.getElementById('inspectBuildings');
+const closeBtn = document.getElementById('inspectClose');
+const cancelBtn = document.getElementById('inspectCancel');
+const okBtn = document.getElementById('inspectOk');
+const editBtn = document.getElementById('inspectEdit');
+const statusBadge = document.getElementById('inspectStatus');
+const statusSelectWrap = document.getElementById('inspectStatusSelectWrap');
+const statusSelect = document.getElementById('inspectStatusSelect');
+const famBadge = document.getElementById('inspectFamilies');
+const roomsBadge = document.getElementById('inspectRooms');
+const bldgBadge = document.getElementById('inspectBuildings');
+const famWrap = document.getElementById('inspectFamiliesInputWrap');
+const roomsWrap = document.getElementById('inspectRoomsInputWrap');
+const bldgWrap = document.getElementById('inspectBuildingsInputWrap');
+const famInput = document.getElementById('inspectFamiliesInput');
+const roomsInput = document.getElementById('inspectRoomsInput');
+const bldgInput = document.getElementById('inspectBuildingsInput');
+
+function openInspect(name, families, rooms, buildings){
+  titleEl.textContent = name;
+  familiesEl.textContent = families;
+  roomsEl.textContent = rooms;
+  buildingsEl.textContent = buildings;
+  famInput.value = families;
+  roomsInput.value = rooms;
+  bldgInput.value = buildings;
+  // status text/class
+  var statusText = '-';
+  var statusClass = '';
+  if (currentCard) {
+    var status = currentCard.getAttribute('data-status');
+    if (status === 'available') { statusText = 'Available'; statusClass = 'status-available'; }
+    else if (status === 'maintenance') { statusText = 'Under Maintenance'; statusClass = 'status-maintenance'; }
+    else if (status === 'unavailable') { statusText = 'Unavailable'; statusClass = 'status-unavailable'; }
+  }
+  var statusEl = document.getElementById('inspectStatus');
+  statusEl.textContent = statusText;
+  statusEl.className = 'feature-status ' + statusClass;
+  // sync select value
+  var statusVal = 'available';
+  if (currentCard) { statusVal = currentCard.getAttribute('data-status') || 'available'; }
+  statusSelect.value = statusVal;
+  overlay.style.display = 'block';
+  modal.style.display = 'block';
+}
+
+function closeInspect(){
+  overlay.style.display = 'none';
+  modal.style.display = 'none';
+}
+
+// Attach click handlers to cards
+var currentCard = null;
+document.querySelectorAll('.inspect-card').forEach(function(card){
+  card.addEventListener('click', function(){
+    currentCard = card;
+    openInspect(
+      card.getAttribute('data-name'),
+      card.getAttribute('data-families'),
+      card.getAttribute('data-rooms'),
+      card.getAttribute('data-buildings')
+    );
+  });
+});
+
+// Close actions
+overlay.addEventListener('click', closeInspect);
+closeBtn.addEventListener('click', closeInspect);
+cancelBtn.addEventListener('click', closeInspect);
+okBtn.addEventListener('click', closeInspect);
+
+// Escape key
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeInspect(); });
+
+// Toggle edit mode for status
+var editMode = false;
+function setEditMode(on) {
+  editMode = !!on;
+  statusSelectWrap.style.display = editMode ? 'block' : 'none';
+  statusBadge.style.display = editMode ? 'none' : 'inline-block';
+  famWrap.style.display = editMode ? 'block' : 'none';
+  roomsWrap.style.display = editMode ? 'block' : 'none';
+  bldgWrap.style.display = editMode ? 'block' : 'none';
+  famBadge.style.display = editMode ? 'none' : 'inline-block';
+  roomsBadge.style.display = editMode ? 'none' : 'inline-block';
+  bldgBadge.style.display = editMode ? 'none' : 'inline-block';
+}
+
+editBtn.addEventListener('click', function(){
+  setEditMode(!editMode);
+});
+
+// Persist selection back to card and badge when modal closes or when value changes
+statusSelect.addEventListener('change', function(){
+  var val = statusSelect.value;
+  var text = val === 'available' ? 'Available' : (val === 'maintenance' ? 'Under Maintenance' : 'Unavailable');
+  var cls = val === 'available' ? 'status-available' : (val === 'maintenance' ? 'status-maintenance' : 'status-unavailable');
+  statusBadge.textContent = text;
+  statusBadge.className = 'feature-status ' + cls;
+  if (currentCard) {
+    currentCard.setAttribute('data-status', val);
+    // also update the card's visible badge if present
+    var cardBadge = currentCard.querySelector('.feature-status');
+    if (cardBadge) {
+      cardBadge.textContent = text;
+      cardBadge.className = 'feature-status ' + cls;
+    }
+  }
+});
+
+// Sync numeric edits
+function syncNumeric(field, val){
+  var n = parseInt(val, 10);
+  if (isNaN(n) || n < 0) return;
+  if (!currentCard) return;
+  if (field === 'families') { famBadge.textContent = n; currentCard.setAttribute('data-families', String(n)); }
+  if (field === 'rooms') { roomsBadge.textContent = n; currentCard.setAttribute('data-rooms', String(n)); }
+  if (field === 'buildings') { bldgBadge.textContent = n; currentCard.setAttribute('data-buildings', String(n)); }
+}
+
+famInput.addEventListener('input', function(){ syncNumeric('families', famInput.value); });
+roomsInput.addEventListener('input', function(){ syncNumeric('rooms', roomsInput.value); });
+bldgInput.addEventListener('input', function(){ syncNumeric('buildings', bldgInput.value); });
+
+// Ensure edit mode off when opening/closing
+function resetModalState(){ setEditMode(false); }
+function closeInspect(){ overlay.style.display = 'none'; modal.style.display = 'none'; resetModalState(); }
+// override earlier closeInspect definition moved below to include reset
+</script>

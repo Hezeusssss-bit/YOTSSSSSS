@@ -174,9 +174,29 @@ public function index(Request $request)
         return view('products.facilities', compact('totalFacilities'));
     }
 
+    public function communityCenter()
+    {
+        return view('products.community');
+    }
+
+    public function healthCenter()
+    {
+        return view('products.health');
+    }
+
+    public function emergencyShelter()
+    {
+        return view('products.shelter');
+    }
+
     public function school()
     {
         return view('products.school');
+    }
+
+    public function tryAll()
+    {
+        return view('products.tryall');
     }
 
     /**

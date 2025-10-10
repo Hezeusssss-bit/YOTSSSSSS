@@ -195,8 +195,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
       <a href="{{ route('facilities') }}" class="cta">View all</a>
     </div>
     <div class="card">
-      <div class="title">Total Kung Pagidnts</div>
-      <a href="{{ route('resident.index') }}" class="cta">View all</a>
+      <div class="title">SMS Alert</div>
+      <a href="{{ route('tryall') }}" class="cta">View all</a>
     </div>
   </div>
 
