@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Resident;
+use Illuminate\Support\Facades\Schema;
 
 class ProductController extends Controller
 {
@@ -95,7 +96,8 @@ public function index(Request $request)
             // price now represents Age
             'price' => 'required|integer',
             // description now represents Address
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'gender' => 'required|in:Male,Female'
         ]);
 
         $resident = Resident::create($data);
@@ -133,7 +135,8 @@ public function index(Request $request)
             'name' => 'required',
             'qty' => 'required|string',
             'price' => 'required|integer',
-            'description' => "nullable"
+            'description' => "nullable",
+            'gender' => 'nullable|in:Male,Female'
         ]);
 
         $resident->update($data);
@@ -164,7 +167,23 @@ public function index(Request $request)
             ->paginate($perPage)
             ->appends($request->all());
         $totalResidents = Resident::count();
-        return view('products.home', compact('residents', 'totalResidents'));
+        $maleCount = 0;
+        $femaleCount = 0;
+        $seniorMale = 0;
+        $seniorFemale = 0;
+        $childMale = 0;
+        $childFemale = 0;
+        if (Schema::hasColumn('residents', 'gender')) {
+            $maleCount = Resident::where('gender', 'Male')->count();
+            $femaleCount = Resident::where('gender', 'Female')->count();
+            if (Schema::hasColumn('residents', 'price')) {
+                $seniorMale = Resident::where('gender', 'Male')->where('price', '>=', 60)->count();
+                $seniorFemale = Resident::where('gender', 'Female')->where('price', '>=', 60)->count();
+                $childMale = Resident::where('gender', 'Male')->where('price', '<', 18)->count();
+                $childFemale = Resident::where('gender', 'Female')->where('price', '<', 18)->count();
+            }
+        }
+        return view('products.home', compact('residents', 'totalResidents', 'maleCount', 'femaleCount', 'seniorMale', 'seniorFemale', 'childMale', 'childFemale'));
     }
 
     public function facilities()

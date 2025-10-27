@@ -114,6 +114,16 @@ select:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,118,210,0.3);
                 </div>
 
                 <div>
+                    <label>Gender</label>
+                    <select name="gender">
+                        <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Select Gender</option>
+                        <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                        <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                    </select>
+                    @error('gender')<div class="error-message">{{ $message }}</div>@enderror
+                </div>
+
+                <div>
                     <label>Address</label>
                     <select name="description">
                         <option value="" disabled {{ old('description') ? '' : 'selected' }}>Select Purok</option>

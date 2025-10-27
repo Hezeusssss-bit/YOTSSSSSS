@@ -50,6 +50,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .filter-left { display: flex; gap: 10px; align-items: center; }
 .filter-btn { padding: 10px 20px; border-radius: 8px; border: 1px solid #ddd; background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
 .filter-btn:hover { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+.dropdown { position: relative; }
+.dropdown-menu { position: absolute; top: 110%; left: 0; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); min-width: 180px; padding: 8px; display: none; z-index: 50; }
+.dropdown.open .dropdown-menu { display: block; }
+.dropdown-item { padding: 10px 12px; border-radius: 6px; font-size: 14px; color: #333; cursor: pointer; }
+.dropdown-item:hover { background: #f5f5f5; }
 .search-container { position: relative; display: flex; align-items: center; }
 .search-container i { position: absolute; left: 15px; color: #999; font-size: 14px; }
 .search-container input { padding: 10px 15px 10px 40px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; width: 300px; transition: all 0.3s ease; }
@@ -218,8 +223,29 @@ tbody tr:hover { background: #fafafa; }
     <!-- Filter & Search -->
     <div class="filter-section">
       <div class="filter-left">
-        <button class="filter-btn">ALL <i class="fas fa-chevron-down"></i></button>
-        <button class="filter-btn">FILTER <i class="fas fa-chevron-down"></i></button>
+        <div class="dropdown" id="purokDropdown">
+          <button type="button" class="filter-btn" id="purokBtn">PUROK <i class="fas fa-chevron-down"></i></button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" data-value="ALL">ALL PUROK</div>
+            <div class="dropdown-item" data-value="Purok I">Purok I</div>
+            <div class="dropdown-item" data-value="Purok II">Purok II</div>
+            <div class="dropdown-item" data-value="Purok III">Purok III</div>
+            <div class="dropdown-item" data-value="Purok IV">Purok IV</div>
+            <div class="dropdown-item" data-value="Purok V">Purok V</div>
+          </div>
+        </div>
+        <div class="dropdown" id="categoryDropdown">
+          <button type="button" class="filter-btn" id="categoryBtn">RESIDENTS<i class="fas fa-chevron-down"></i></button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" data-value="ALL">ALL RESIDENTS</div>
+            <div class="dropdown-item" data-value="SENIOR MALE">SENIOR MALE</div>
+            <div class="dropdown-item" data-value="SENIOR FEMALE">SENIOR FEMALE</div>
+            <div class="dropdown-item" data-value="MALE">MALE</div>
+            <div class="dropdown-item" data-value="FEMALE">FEMALE</div>
+            <div class="dropdown-item" data-value="CHILD MALE">CHILD MALE</div>
+            <div class="dropdown-item" data-value="CHILD FEMALE">CHILD FEMALE</div>
+          </div>
+        </div>
         <div class="search-container">
           <i class="fas fa-search"></i>
           <input type="text" id="searchInput" placeholder="Search" value="{{ request('search') }}" onkeyup="liveSearch()" />
@@ -240,6 +266,7 @@ tbody tr:hover { background: #fafafa; }
             <th class="sortable" onclick="sortTable(1,'string')">LASTNAME <i class="fas fa-sort sort-arrow"></i></th>
             <th class="sortable" onclick="sortTable(2,'string')">FIRSTNAME <i class="fas fa-sort sort-arrow"></i></th>
             <th>AGE</th>
+            <th>GENDER</th>
             <th>ADDRESS</th>
             <th>ADDED ON</th>
             <th>ACTION</th>
@@ -247,24 +274,25 @@ tbody tr:hover { background: #fafafa; }
         </thead>
         <tbody>
           @forelse($residents as $resident)
-          <tr>
+          <tr data-gender="{{ $resident->gender ?? '' }}">
             <td>{{ $resident->id }}</td>
             <td>{{ $resident->qty }}</td>
             <td>{{ $resident->name }}</td>
             <td>{{ $resident->price }}</td>
+            <td>{{ $resident->gender ?? '-' }}</td>
             <td>{{ $resident->description }}</td>
             <td>{{ $resident->created_at->format('M d, Y') }}</td>
             <td>
               <div class="actions">
                 <button type="button" class="btn-icon view" onclick="openViewModal({{ $resident->id }})"><i class="fas fa-eye"></i></button>
-                <button type="button" class="btn-icon edit" onclick="openEditModal('{{ route('resident.update', $resident->id) }}','{{ addslashes($resident->name) }}','{{ $resident->qty }}','{{ $resident->price }}','{{ addslashes($resident->description) }}')"><i class="fas fa-edit"></i></button>
+                <button type="button" class="btn-icon edit" onclick="openEditModal('{{ route('resident.update', $resident->id) }}','{{ addslashes($resident->name) }}','{{ $resident->qty }}','{{ $resident->price }}','{{ addslashes($resident->description) }}','{{ $resident->gender }}')"><i class="fas fa-edit"></i></button>
                 <button type="button" class="btn-icon delete" onclick="openDeleteModal('{{ route('resident.destroy', $resident->id) }}')"><i class="fas fa-trash"></i></button>
               </div>
             </td>
           </tr>
           @empty
           <tr>
-            <td colspan="7" style="text-align:center;color:#999;">No residents found.</td>
+            <td colspan="8" style="text-align:center;color:#999;">No residents found.</td>
           </tr>
           @endforelse
         </tbody>
@@ -283,6 +311,12 @@ tbody tr:hover { background: #fafafa; }
         </select>
         <span>per page</span>
         <span style="margin-left:16px;color:#666;">Total Residents: <strong>{{ number_format($totalResidents) }}</strong></span>
+        <span style="margin-left:16px;color:#666;">Male: <strong>{{ isset($maleCount) ? number_format($maleCount) : '0' }}</strong></span>
+        <span style="margin-left:16px;color:#666;">Female: <strong>{{ isset($femaleCount) ? number_format($femaleCount) : '0' }}</strong></span>
+        <span style="margin-left:16px;color:#666;">Senior Male: <strong>{{ isset($seniorMale) ? number_format($seniorMale) : '0' }}</strong></span>
+        <span style="margin-left:16px;color:#666;">Senior Female: <strong>{{ isset($seniorFemale) ? number_format($seniorFemale) : '0' }}</strong></span>
+        <span style="margin-left:16px;color:#666;">Child Male: <strong>{{ isset($childMale) ? number_format($childMale) : '0' }}</strong></span>
+        <span style="margin-left:16px;color:#666;">Child Female: <strong>{{ isset($childFemale) ? number_format($childFemale) : '0' }}</strong></span>
       </div>
       {{ $residents->appends(request()->query())->links('pagination::bootstrap-4') }}
     </div>
@@ -321,6 +355,15 @@ tbody tr:hover { background: #fafafa; }
         <option value="Purok V" {{ old('description') == 'Purok V' ? 'selected' : '' }}>Purok V</option>
       </select>
       @error('description')<div class="error-message">{{ $message }}</div>@enderror
+    </div>
+    <div>
+      <label>Gender</label>
+      <select name="gender">
+        <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Select Gender</option>
+        <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+        <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+      </select>
+      @error('gender')<div class="error-message">{{ $message }}</div>@enderror
     </div>
     <div class="modal-buttons" style="margin-top:15px;">
       <button type="submit" class="btn-add">Save</button>
@@ -362,6 +405,15 @@ tbody tr:hover { background: #fafafa; }
           <option value="Purok V">Purok V</option>
         </select>
         @error('description')<div class="error-message">{{ $message }}</div>@enderror
+      </div>
+      <div>
+        <label>Gender</label>
+        <select name="gender" id="edit_gender">
+          <option value="" disabled>Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+        @error('gender')<div class="error-message">{{ $message }}</div>@enderror
       </div>
       <div class="modal-buttons" style="margin-top:15px;">
         <button type="submit" class="btn-add">Save Changes</button>
@@ -471,7 +523,7 @@ function closeAddModal() {
   document.getElementById('addResidentOverlay').style.display = 'none';
   document.getElementById('addResidentModal').style.display = 'none';
 }
-function openEditModal(action, name, qty, price, description) {
+function openEditModal(action, name, qty, price, description, gender) {
   document.getElementById('editResidentOverlay').style.display = 'block';
   document.getElementById('editResidentModal').style.display = 'block';
   const form = document.getElementById('editResidentForm');
@@ -480,6 +532,7 @@ function openEditModal(action, name, qty, price, description) {
   document.getElementById('edit_qty').value = qty;
   document.getElementById('edit_price').value = price;
   document.getElementById('edit_description').value = description;
+  if (gender) { document.getElementById('edit_gender').value = gender; }
 }
 function closeEditModal() {
   document.getElementById('editResidentOverlay').style.display = 'none';
@@ -549,17 +602,89 @@ setTimeout(()=>{
   const alert = document.getElementById('successAlert') || document.getElementById('welcomeAlert');
   if(alert){ alert.classList.add('hide'); setTimeout(()=>alert.remove(),500); }
 },3000);
-function liveSearch() {
-  const input=document.getElementById('searchInput').value.toLowerCase();
-  const rows=document.getElementById('residentsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+let currentPurokFilter = 'ALL';
+let currentCategoryFilter = 'ALL';
+function refreshFilters(){
+  const input = document.getElementById('searchInput').value.toLowerCase();
+  const tbody = document.getElementById('residentsTable').getElementsByTagName('tbody')[0];
+  const rows = tbody.getElementsByTagName('tr');
   for(let row of rows){
-    let match=false;
+    let matchesSearch = false;
     for(let cell of row.getElementsByTagName('td')){
-      if(cell.textContent.toLowerCase().includes(input)){ match=true; break; }
+      if(cell.textContent.toLowerCase().includes(input)) { matchesSearch = true; break; }
     }
-    row.style.display=match?'':'none';
+    const purokText = row.children[5]?.textContent.trim() || '';
+    const matchesPurok = currentPurokFilter === 'ALL' || purokText === currentPurokFilter;
+    // Category filter (requires age and optionally gender in data-gender)
+    const ageText = row.children[3]?.textContent.trim() || '';
+    const age = parseInt(ageText, 10);
+    const gender = (row.getAttribute('data-gender') || '').toUpperCase();
+    const isChild = !isNaN(age) && age < 18;
+    const isSenior = !isNaN(age) && age >= 60;
+    const isMale = gender === 'MALE' || gender === 'M';
+    const isFemale = gender === 'FEMALE' || gender === 'F';
+
+    let matchesCategory = true; // default when ALL
+    switch(currentCategoryFilter){
+      case 'SENIOR MALE': matchesCategory = isSenior && isMale; break;
+      case 'SENIOR FEMALE': matchesCategory = isSenior && isFemale; break;
+      case 'MALE': matchesCategory = isMale; break;
+      case 'FEMALE': matchesCategory = isFemale; break;
+      case 'CHILD MALE': matchesCategory = isChild && isMale; break;
+      case 'CHILD FEMALE': matchesCategory = isChild && isFemale; break;
+      default: matchesCategory = true; // ALL
+    }
+    row.style.display = (matchesSearch && matchesPurok) ? '' : 'none';
+    if(row.style.display !== 'none' && !matchesCategory){ row.style.display = 'none'; }
   }
 }
+function liveSearch(){
+  refreshFilters();
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  const dropdown = document.getElementById('purokDropdown');
+  const btn = document.getElementById('purokBtn');
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(){
+    dropdown.classList.remove('open');
+  });
+  dropdown.querySelectorAll('.dropdown-item').forEach(function(item){
+    item.addEventListener('click', function(e){
+      e.stopPropagation();
+      const value = this.getAttribute('data-value');
+      currentPurokFilter = value;
+      btn.innerHTML = value + ' <i class="fas fa-chevron-down"></i>';
+      dropdown.classList.remove('open');
+      refreshFilters();
+    });
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function(){
+  const dropdown = document.getElementById('categoryDropdown');
+  const btn = document.getElementById('categoryBtn');
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(){
+    dropdown.classList.remove('open');
+  });
+  dropdown.querySelectorAll('.dropdown-item').forEach(function(item){
+    item.addEventListener('click', function(e){
+      e.stopPropagation();
+      const value = this.getAttribute('data-value');
+      currentCategoryFilter = value;
+      btn.innerHTML = value + ' <i class="fas fa-chevron-down"></i>';
+      dropdown.classList.remove('open');
+      refreshFilters();
+    });
+  });
+});
 
 function changePerPage(value){
   const params = new URLSearchParams(window.location.search);

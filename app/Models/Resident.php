@@ -15,6 +15,7 @@ class Resident extends Model
         'name',
         'qty', // Lastname
         'price', // Age
-        'description' // Address
+        'description', // Address
+        'gender'
     ];
 }

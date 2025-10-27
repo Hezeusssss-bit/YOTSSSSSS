@@ -63,3 +63,4 @@ Route::post('/send-evacuation-sms', [App\Http\Controllers\SmsController::class, 
 Route::view('/facility', 'Facility.facilities')->name('facility.facilities');
 Route::view('/sms/tryall', 'SMS.tryall')->name('sms.tryall');
 Route::view('/services', 'Services.services')->name('services');
+Route::view('/program', 'Program.program')->name('program');
