@@ -171,7 +171,7 @@ public function index(Request $request)
     {
         // You can add facilities data here in the future
         $totalFacilities = 0; // Placeholder for now
-        return view('products.facilities', compact('totalFacilities'));
+        return view('Facility.facilities', compact('totalFacilities'));
     }
 
     public function communityCenter()
@@ -196,7 +196,7 @@ public function index(Request $request)
 
     public function tryAll()
     {
-        return view('products.tryall');
+        return view('SMS.tryall');
     }
 
     /**

@@ -35,6 +35,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 label { display: block; margin-bottom: 6px; color: #555; font-weight: bold; }
 input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 5px; font-size: 14px; transition: all 0.3s ease; }
 input[type="text"]:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,118,210,0.3); outline: none; }
+select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 5px; font-size: 14px; transition: all 0.3s ease; background: #fff; }
+select:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,118,210,0.3); outline: none; }
 .error-message { color: #842029; font-size: 12px; margin-bottom: 10px; }
 
 .btn-add { padding: 10px 20px; border-radius: 8px; background: #fff; border: 1px solid #ddd; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; color: #333; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
@@ -113,8 +115,14 @@ input[type="text"]:focus { border-color: #1976d2; box-shadow: 0 0 10px rgba(25,1
 
                 <div>
                     <label>Address</label>
-                    <input type="text" name="description" placeholder="Address" value="{{ old('description')
-                    }}" />
+                    <select name="description">
+                        <option value="" disabled {{ old('description') ? '' : 'selected' }}>Select Purok</option>
+                        <option value="Purok I" {{ old('description') == 'Purok I' ? 'selected' : '' }}>Purok I</option>
+                        <option value="Purok II" {{ old('description') == 'Purok II' ? 'selected' : '' }}>Purok II</option>
+                        <option value="Purok III" {{ old('description') == 'Purok III' ? 'selected' : '' }}>Purok III</option>
+                        <option value="Purok IV" {{ old('description') == 'Purok IV' ? 'selected' : '' }}>Purok IV</option>
+                        <option value="Purok V" {{ old('description') == 'Purok V' ? 'selected' : '' }}>Purok V</option>
+                    </select>
                     @error('description')
                         <div class="error-message">{{ $message }}</div>
                     @enderror

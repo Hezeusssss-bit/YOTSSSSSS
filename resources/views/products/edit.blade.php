@@ -88,6 +88,23 @@
         outline: none;
     }
 
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    select:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 10px rgba(25,118,210,0.3);
+        outline: none;
+    }
+
     input[type="submit"] {
         width: 100%;
         background: linear-gradient(135deg, #1976d2, #42a5f5);
@@ -167,7 +184,14 @@
         </div>
         <div>
             <label>Address</label>
-            <input type="text" name="description" value="{{ $product->description }}" />
+            <select name="description">
+                <option value="" disabled {{ $product->description ? '' : 'selected' }}>Select Purok</option>
+                <option value="Purok I" {{ $product->description == 'Purok I' ? 'selected' : '' }}>Purok I</option>
+                <option value="Purok II" {{ $product->description == 'Purok II' ? 'selected' : '' }}>Purok II</option>
+                <option value="Purok III" {{ $product->description == 'Purok III' ? 'selected' : '' }}>Purok III</option>
+                <option value="Purok IV" {{ $product->description == 'Purok IV' ? 'selected' : '' }}>Purok IV</option>
+                <option value="Purok V" {{ $product->description == 'Purok V' ? 'selected' : '' }}>Purok V</option>
+            </select>
         </div>
         <div>
             <input type="submit" value="Update Record" id="updateBtn" disabled />

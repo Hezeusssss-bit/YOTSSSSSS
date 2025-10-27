@@ -34,7 +34,17 @@ class SmsController extends Controller
                 // Simulation mode - log the SMS instead of sending
                 \Log::info('SMS would be sent to: ' . $phoneNumber);
                 \Log::info('Message: ' . $message);
-                
+                // Log recent activity (simulation)
+                $activities = session('system_activities', []);
+                array_unshift($activities, [
+                    'type' => 'sms_alert',
+                    'description' => 'Evacuation alert triggered (simulation mode)',
+                    'timestamp' => now(),
+                    'time_ago' => 'just now'
+                ]);
+                $activities = array_slice($activities, 0, 20);
+                session(['system_activities' => $activities]);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'SMS simulation successful! Check logs.',
@@ -51,11 +61,33 @@ class SmsController extends Controller
             ]);
 
             if ($response->successful()) {
+                // Log recent activity (real SMS)
+                $activities = session('system_activities', []);
+                array_unshift($activities, [
+                    'type' => 'sms_alert',
+                    'description' => 'Evacuation alert sent successfully',
+                    'timestamp' => now(),
+                    'time_ago' => 'just now'
+                ]);
+                $activities = array_slice($activities, 0, 20);
+                session(['system_activities' => $activities]);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Emergency SMS sent successfully!'
                 ]);
             } else {
+                // Log failure activity
+                $activities = session('system_activities', []);
+                array_unshift($activities, [
+                    'type' => 'sms_failed',
+                    'description' => 'Failed to send evacuation alert (check API config)',
+                    'timestamp' => now(),
+                    'time_ago' => 'just now'
+                ]);
+                $activities = array_slice($activities, 0, 20);
+                session(['system_activities' => $activities]);
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to send SMS. Please check your API configuration.'
@@ -64,7 +96,17 @@ class SmsController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('SMS Error: ' . $e->getMessage());
-            
+            // Log exception activity
+            $activities = session('system_activities', []);
+            array_unshift($activities, [
+                'type' => 'sms_failed',
+                'description' => 'SMS service error: ' . $e->getMessage(),
+                'timestamp' => now(),
+                'time_ago' => 'just now'
+            ]);
+            $activities = array_slice($activities, 0, 20);
+            session(['system_activities' => $activities]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'SMS service error: ' . $e->getMessage()

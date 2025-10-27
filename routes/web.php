@@ -57,3 +57,7 @@ Route::get('/facilities/emergency-shelter', [ProductController::class, 'emergenc
 Route::get('/school', [ProductController::class, 'school'])->name('school');
 Route::get('/try-all', [ProductController::class, 'tryAll'])->name('tryall');
 Route::post('/send-evacuation-sms', [App\Http\Controllers\SmsController::class, 'sendEvacuationAlert'])->name('send.evacuation.sms');
+
+// Direct view routes for newly moved Blade files
+Route::view('/facility', 'Facility.facilities')->name('facility.facilities');
+Route::view('/sms/tryall', 'SMS.tryall')->name('sms.tryall');

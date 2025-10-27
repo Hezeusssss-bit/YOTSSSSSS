@@ -119,10 +119,25 @@ tbody tr:hover { background: #fafafa; }
   color: #333;
   transition: all 0.2s ease;
 }
+.modal select {
+  padding: 12px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  background: #fafafa;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s ease;
+}
 .modal input[type="text"]:focus,
 .modal input[type="number"]:focus,
 .modal input[type="email"]:focus,
 .modal input[type="password"]:focus {
+  outline: none;
+  border-color: #1a1a2e;
+  box-shadow: 0 0 0 3px rgba(26, 26, 46, 0.1);
+  background: #fff;
+}
+.modal select:focus {
   outline: none;
   border-color: #1a1a2e;
   box-shadow: 0 0 0 3px rgba(26, 26, 46, 0.1);
@@ -297,7 +312,14 @@ tbody tr:hover { background: #fafafa; }
     </div>
     <div>
       <label>Address</label>
-      <input type="text" name="description" placeholder="Address" value="{{ old('description') }}">
+      <select name="description">
+        <option value="" disabled {{ old('description') ? '' : 'selected' }}>Select Purok</option>
+        <option value="Purok I" {{ old('description') == 'Purok I' ? 'selected' : '' }}>Purok I</option>
+        <option value="Purok II" {{ old('description') == 'Purok II' ? 'selected' : '' }}>Purok II</option>
+        <option value="Purok III" {{ old('description') == 'Purok III' ? 'selected' : '' }}>Purok III</option>
+        <option value="Purok IV" {{ old('description') == 'Purok IV' ? 'selected' : '' }}>Purok IV</option>
+        <option value="Purok V" {{ old('description') == 'Purok V' ? 'selected' : '' }}>Purok V</option>
+      </select>
       @error('description')<div class="error-message">{{ $message }}</div>@enderror
     </div>
     <div class="modal-buttons" style="margin-top:15px;">
@@ -331,7 +353,14 @@ tbody tr:hover { background: #fafafa; }
       </div>
       <div>
         <label>Address</label>
-        <input type="text" name="description" id="edit_description" placeholder="Address">
+        <select name="description" id="edit_description">
+          <option value="" disabled>Select Purok</option>
+          <option value="Purok I">Purok I</option>
+          <option value="Purok II">Purok II</option>
+          <option value="Purok III">Purok III</option>
+          <option value="Purok IV">Purok IV</option>
+          <option value="Purok V">Purok V</option>
+        </select>
         @error('description')<div class="error-message">{{ $message }}</div>@enderror
       </div>
       <div class="modal-buttons" style="margin-top:15px;">

@@ -59,7 +59,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   <nav class="nav-menu">
     <a href="{{ route('resident.index') }}" class="nav-item"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
     <a href="{{ route('facilities') }}" class="nav-item active"><i class="fas fa-building"></i><span>Facilities</span></a>
-    <a href="{{ route('home') }}" class="nav-item"><i class="fas fa-users"></i><span>Residents</span></a>
   </nav>
   <div class="sidebar-footer">
     <a href="#" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
