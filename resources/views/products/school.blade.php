@@ -117,7 +117,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 <div class="main-content">
   <div class="header">
     <h1>School Facilities</h1>
-
+  
   </div>
 
   <!-- Inspect Modal -->
