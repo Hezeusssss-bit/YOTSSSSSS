@@ -75,10 +75,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 <div class="main-content">
   <div class="header">
     <h1>Facilities Management</h1>
-    <div class="header-icons">
-      <button class="icon-btn"><i class="fas fa-bell"></i></button>
-      <button class="icon-btn"><i class="fas fa-user"></i></button>
-    </div>
   </div>
 
   <div class="container">

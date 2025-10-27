@@ -209,10 +209,6 @@ tbody tr:hover { background: #fafafa; }
 <div class="main-content">
   <div class="header">
     <h1>Total Residents</h1>
-    <div class="header-icons">
-      <button class="icon-btn"><i class="fas fa-bell"></i></button>
-      <button class="icon-btn"><i class="fas fa-user"></i></button>
-    </div>
   </div>
 
   @if(session('Success'))

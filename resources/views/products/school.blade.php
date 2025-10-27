@@ -100,7 +100,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   <nav class="nav-menu">
     <a href="{{ route('resident.index') }}" class="nav-item"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
     <a href="{{ route('facilities') }}" class="nav-item"><i class="fas fa-building"></i><span>Facilities</span></a>
-    <a href="{{ route('home') }}" class="nav-item"><i class="fas fa-users"></i><span>Residents</span></a>
+    <a href="" class="nav-item"><i class="fas fa-users"></i><span>View Evacuee</span></a>
   </nav>
   <div class="sidebar-footer">
     <a href="#" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
@@ -117,10 +117,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 <div class="main-content">
   <div class="header">
     <h1>School Facilities</h1>
-    <div class="header-icons">
-      <button class="icon-btn"><i class="fas fa-bell"></i></button>
-      <button class="icon-btn"><i class="fas fa-user"></i></button>
-    </div>
+
   </div>
 
   <!-- Inspect Modal -->
