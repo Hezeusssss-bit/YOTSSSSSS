@@ -74,7 +74,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 <!-- Main Content -->
 <div class="main-content">
   <div class="header">
-    <h1>Facilities Management</h1>
+    <h1>Facility Management</h1>
   </div>
 
   <div class="container">
