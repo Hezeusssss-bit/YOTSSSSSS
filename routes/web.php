@@ -29,6 +29,7 @@ Route::middleware('authCheck')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
 });
 
 Route::get('/', function () {
@@ -61,3 +62,4 @@ Route::post('/send-evacuation-sms', [App\Http\Controllers\SmsController::class, 
 // Direct view routes for newly moved Blade files
 Route::view('/facility', 'Facility.facilities')->name('facility.facilities');
 Route::view('/sms/tryall', 'SMS.tryall')->name('sms.tryall');
+Route::view('/services', 'Services.services')->name('services');

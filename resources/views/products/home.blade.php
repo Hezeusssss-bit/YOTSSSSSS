@@ -186,7 +186,7 @@ tbody tr:hover { background: #fafafa; }
   <div class="logo"><i class="fas fa-store"></i> <span>Logo</span></div>
   <nav class="nav-menu">
     <a href="{{ route('resident.index') }}" class="nav-item active"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
-    <a href="#" class="nav-item"><i class="fas fa-boxes"></i><span>Services</span></a>
+    <a href="{{ route('services') }}" class="nav-item"><i class="fas fa-boxes"></i><span>Services</span></a>
     <a href="#" class="nav-item"><i class="fas fa-users"></i><span>Events</span></a>
   </nav>
   <div class="sidebar-footer">
